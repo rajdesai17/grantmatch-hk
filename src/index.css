@@ -1,0 +1,94 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background-start: #13151A;
+  --background-end: #1A1D25;
+  --accent-muted: #3E6A79;
+  --accent-subtle: #2E4A59;
+  --accent-warm: #A57D52;
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, var(--background-start), var(--background-end));
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, #0F172A, #1E293B);
+  position: relative;
+  overflow: hidden;
+}
+
+.gradient-bg::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(62, 106, 121, 0.08) 0%, rgba(30, 41, 59, 0) 50%);
+  opacity: 0.4;
+  z-index: 0;
+}
+
+.card-bg {
+  background: #1A1D25;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.btn-primary {
+  @apply bg-[#2E4A59] text-white px-5 py-2.5 rounded-md font-medium flex items-center justify-center gap-2 transition-all duration-300 hover:bg-[#3E6A79] focus:outline-none focus:ring-2 focus:ring-[#3E6A79] focus:ring-opacity-50;
+}
+
+.btn-secondary {
+  @apply bg-transparent border border-[#3E6A79] text-white px-5 py-2.5 rounded-md font-medium flex items-center justify-center gap-2 transition-all duration-300 hover:bg-[#1A1D25] focus:outline-none focus:ring-2 focus:ring-[#3E6A79] focus:ring-opacity-50;
+}
+
+.nav-link {
+  @apply text-gray-300 hover:text-white transition-colors duration-200 relative px-1;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 1px;
+  bottom: -2px;
+  left: 0;
+  background-color: var(--accent-muted);
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+.nav-link.active {
+  @apply text-white;
+}
+
+.nav-link.active::after {
+  width: 100%;
+}
+
+.glow-subtle {
+  box-shadow: 0 0 20px rgba(62, 106, 121, 0.15);
+}
+
+.feature-icon {
+  @apply w-12 h-12 mb-4 text-[#94A3B8] opacity-80;
+}
+
+.grid-layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}

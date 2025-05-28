@@ -1,0 +1,56 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# GrantMatch Build Rules (custom.mdc)
+
+## 1. Follow the Build Guide
+- Use the step-by-step instructions in [follow.txt](mdc:follow.txt) as the primary source for project setup, development, and deployment.
+- Do not skip any steps; each is required for a successful build and deployment.
+
+## 2. Technology & Documentation Links
+- **React (TypeScript):** https://react.dev/ | https://www.typescriptlang.org/
+- **Vite:** https://vitejs.dev/guide/
+- **TailwindCSS:** https://tailwindcss.com/docs/installation
+- **Supabase:** https://supabase.com/docs
+- **Supabase Edge Functions:** https://supabase.com/docs/guides/functions
+- **Solana Devnet & CLI:** https://docs.solana.com/cli | https://docs.solana.com/developing/clients/javascript-api
+- **@solana/web3.js:** https://solana-labs.github.io/solana-web3.js/
+- **Phantom Wallet:** https://docs.phantom.app/
+- **Vercel Deployment:** https://vercel.com/docs
+
+## 3. Project Structure
+- Maintain the structure as described in follow.txt under "Codebase Structure".
+- Place all migrations and Edge Functions in the `supabase/` directory.
+- Store static data (grants, proposals, founders) in the `src/data/` directory.
+
+## 4. Environment Variables
+- Set all required environment variables as listed in follow.txt before running or deploying the app.
+- Never commit sensitive keys to version control.
+
+## 5. Edge Functions
+- Implement and deploy all required Supabase Edge Functions (`mint-nft.ts`, `ai-grants.ts`, `faucet-tokens.ts`, `award-winner.ts`).
+- Reference the Supabase Edge Functions documentation for best practices.
+
+## 6. Blockchain Integration
+- Use Solana Devnet for all blockchain operations (NFT minting, SPL token transfers).
+- Test all wallet and token flows using Phantom Wallet and Solana Devnet.
+
+## 7. Testing & Deployment
+- Test all user flows locally before deploying.
+- Deploy the frontend and Edge Functions to Vercel as described in follow.txt.
+
+## 8. Best Practices
+- Keep all `@import` statements at the top of CSS files.
+- Use environment variables for all secrets and API keys.
+- Follow the data model definitions in follow.txt for all database tables.
+
+## 9. Progress Tracking
+- After every change, update `progress.md` with a simple, precise summary of what was done, to maintain project memory and context.
+
+---
+For detailed, step-by-step instructions, always refer to [follow.txt](mdc:follow.txt).
+
+
+

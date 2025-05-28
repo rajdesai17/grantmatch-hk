@@ -1,0 +1,282 @@
+**GrantMatch Hackathon MVP – Context & Spec**
+
+---
+
+## 1. Problem Statement
+
+- **Underrepresented founders (women-led, grassroots NGOs, small startups)** struggle to discover and apply for relevant grants.
+- **Lack of streamlined support** results in manual, time-consuming searches and inconsistent proposal quality.
+- **Trust & visibility gap**: funders lack transparent reputation data on applicants.
+
+---
+
+## 2. Solution Overview
+
+GrantMatch is a **decentralized, AI-powered grant discovery and on-chain voting platform** that:
+
+1. **Guides founders** through matching with curated funding opportunities via an LLM chat interface.
+2. **Enables DAOs (on-chain funders)** to transparently vote for projects using test-token transfers.
+3. **Creates NFT profiles** for each user (founder or DAO) to record reputation, gender verification, and funding activity.
+
+---
+
+## 3. What It Does (User Journeys)
+
+1. **Founder Signup & Profile**
+    - Self-attested female founders optionally flagged.
+    - Profile record in Supabase; NFT minted on Solana Devnet with metadata stored in Supabase Storage (mission, region, gender flag, applied-grants count).
+2. **Grant Discovery**
+    - Chat UI prompts for org details; LLM filters a static JSON of grants.
+    - Explore tab lists all grants with filters (region, deadline, focus).
+    - “Apply” increments founder’s applied-grants metric in Supabase.
+3. **DAO Voting Demo**
+    - DAO connects wallet (Phantom); faucet mints 100 TestTokens to Devnet wallet.
+    - Voting UI displays founder NFTs; voting = on-chain SPL token transfer.
+    - Top recipients gain a “Top Voted” badge via NFT metadata update stored in Supabase Storage.
+
+---
+
+## 4. How It Works (Technical Flow)
+
+1. **Signup**
+    - **Frontend**: React + TypeScript app communicates with Supabase Auth.
+    - **Edge Function** (Supabase): mints NFT on Solana Devnet using `@solana/web3.js` and uploads metadata JSON to Supabase Storage; stores URI in `nfts` table.
+2. **Grant Data**
+    - Static JSON hosted in Supabase Storage or Git repo; fetched via REST endpoint.
+3. **AI Chat**
+    - Frontend sends user input to a serverless endpoint (Supabase Edge Function).
+    - Function calls Google Gemini API (or OpenAI) → extracts keywords → filters JSON grants → returns top 5.
+4. **Explore Grants**
+    - React page fetches JSON; client-side rendering with filters.
+5. **Voting Flow**
+    - On wallet connect, an Edge Function sends SPL TestTokens to wallet.
+    - Frontend uses `@solana/web3.js` to call SPL token transfer on vote.
+    - Badge script (Supabase Edge Function) updates NFT metadata JSON in Supabase Storage for winners.
+
+---
+
+## 5. Core Features
+
+- **AI-Driven Grant Match**: LLM chat + static JSON filter
+- **Browse & Apply**: Client-side grants list + apply action
+- **Gender Verification**: Self-attestation flag + profile badge
+- **NFT Profiles**: Solana Devnet ERC-721 minting & metadata in Supabase Storage
+- **On-Chain Voting**: TestToken faucet, vote transfers, badge awarding
+
+**GrantMatch Hackathon MVP – Context & Spec**
+
+---
+
+## 1. Problem Statement
+
+- **Underrepresented founders (women-led, grassroots NGOs, small startups)** struggle to discover and apply for relevant grants.
+- **Lack of streamlined support** results in manual, time-consuming searches and inconsistent proposal quality.
+- **Trust & visibility gap**: funders lack transparent reputation data on applicants.
+
+---
+
+## 2. Solution Overview
+
+GrantMatch is a **decentralized, AI-powered grant discovery and on-chain voting platform** that:
+
+1. **Guides founders** through matching with curated funding opportunities via an LLM chat interface.
+2. **Enables DAOs (on-chain funders)** to transparently vote for projects using test-token transfers.
+3. **Creates NFT profiles** for each user (founder or DAO) to record reputation, gender verification, and funding activity.
+
+---
+
+## 3. What It Does (User Journeys)
+
+1. **Founder Signup & Profile**
+    - Self-attested female founders optionally flagged.
+    - Profile record in Supabase; NFT minted on Solana Devnet with metadata stored in Supabase Storage (mission, region, gender flag, applied-grants count).
+2. **Grant Discovery**
+    - Chat UI prompts for org details; LLM filters a static JSON of grants.
+    - Explore tab lists all grants with filters (region, deadline, focus).
+    - “Apply” increments founder’s applied-grants metric in Supabase.
+3. **DAO Voting Demo (Winner Takes All)**
+    - DAO connects wallet (Phantom); faucet mints 100 TestTokens to Devnet wallet.
+    - Voting UI displays founder NFTs; voting = on-chain SPL token transfer (1 TestToken per vote).
+    - **Winner-Takes-All**: At the end of the round, the project with the **highest vote count** receives the **entire TestToken pool** as its mock funding award.
+    - The winning founder’s NFT metadata is updated with a “Champion” badge in Supabase Storage.
+
+---
+
+## 4. How It Works (Technical Flow)
+
+1. **Signup**
+    - **Frontend**: React + TypeScript app communicates with Supabase Auth.
+    - **Edge Function** (Supabase): mints NFT on Solana Devnet using `@solana/web3.js` and uploads metadata JSON to Supabase Storage; stores URI in `nfts` table.
+2. **Grant Data**
+    - Static JSON hosted in Supabase Storage or Git repo; fetched via REST endpoint.
+3. **AI Chat**
+    - Frontend sends user input to a serverless endpoint (Supabase Edge Function).
+    - Function calls Google Gemini API (or OpenAI) → extracts keywords → filters JSON grants → returns top 5.
+4. **Explore Grants**
+    - React page fetches JSON; client-side rendering with filters.
+5. **Voting Flow (Winner Takes All)**
+    - On wallet connect, an Edge Function sends SPL TestTokens to wallet.
+    - Frontend uses `@solana/web3.js` to call SPL token transfer on each vote.
+    - After voting period ends, a **distribution function** queries vote counts from `votes` table in Supabase, identifies the **single project with the highest votes**, and:
+        1. Records the award in a `funding_rounds` table.
+        2. Updates that founder’s NFT metadata in Supabase Storage to include `"champion_badge": true`.
+
+---
+
+## 5. Core Features
+
+- **AI-Driven Grant Match**: LLM chat + static JSON filter
+- **Browse & Apply**: Client-side grants list + apply action
+- **Gender Verification**: Self-attestation flag + profile badge
+- **NFT Profiles**: Solana Devnet ERC-721 minting & metadata in Supabase Storage
+- **On-Chain Voting**: TestToken faucet, vote transfers, **winner-takes-all** award
+
+---
+
+## 6. Technology Stack & Integrations
+
+| Layer | Technology / Service |
+| --- | --- |
+| **Frontend** | React + TypeScript, Vite, Tailwind CSS |
+| **Deployment** | Vercel (static hosting + serverless Functions) |
+| **Backend & Auth** | Supabase (Auth, Postgres, Storage, Edge Functions) |
+| **AI** | Google Gemini API (via Edge Function) |
+| **Blockchain** | Solana Devnet; `@solana/web3.js`; Supabase Storage for metadata |
+| **Wallet** | Phantom Wallet |
+
+---
+
+## 7. Required Tools & Implementation Guide
+
+### 7.1 Required Tools
+
+| Purpose | Tool / Service | Notes |
+| --- | --- | --- |
+| **Version Control** | Git + GitHub | Repo for code, docs, CI/CD |
+| **Package Manager** | npm or Yarn | Manage dependencies |
+| **Frontend Bundler** | Vite | Fast React + TS setup |
+| **Framework & UI** | React + TypeScript + Tailwind CSS | Component-driven UI |
+| **Auth & Backend DB** | Supabase (Auth, Postgres, Storage) | Edge Functions for serverless logic |
+| **AI Integration** | Google Gemini API or OpenAI API | Serverless calls from Edge Functions |
+| **Blockchain SDK** | @solana/web3.js | Minting NFTs, SPL token transfers |
+| **Devnet Access** | Solana CLI | Create keypair, airdrop SOL, deploy to Devnet |
+| **Wallet** | Phantom Wallet | User authentication, transaction signing |
+| **Metadata Hosting** | Supabase Storage | Host NFT JSON metadata |
+| **Deployment** | Vercel CLI | Deploy static app + serverless functions |
+| **Code Editor** | VS Code (recommended) | Extensions: ESLint, Prettier, Tailwind Intellisense |
+| **HTTP Client** | curl or Postman | Test APIs |
+| **Environment Vars** | dotenv | Local .env for API keys, Supabase URL/KEY, Solana seed |
+
+### 7.2 Step-by-Step Implementation Guide
+
+### 1. Project Initialization
+
+1. Install Git, Node.js (v18+), and Yarn or npm.
+2. Create GitHub repo: `gh repo create grantmatch-mvp --public`.
+3. Clone locally: `git clone git@github.com:you/grantmatch-mvp.git && cd grantmatch-mvp`.
+
+### 2. Frontend Setup (React + TypeScript + Vite + Tailwind)
+
+1. Initialize Vite project:
+    
+    ```bash
+    npm create vite@latest frontend -- --template react-ts
+    cd frontend
+    
+    ```
+    
+2. Install dependencies:
+    
+    ```bash
+    npm install
+    npm install tailwindcss postcss autoprefixer
+    npx tailwindcss init -p
+    
+    ```
+    
+3. Configure `tailwind.config.cjs` and include Tailwind directives in `index.css`.
+4. Verify by running: `npm run dev` (default port 5173).
+
+### 3. Supabase Backend & Auth
+
+1. Install Supabase CLI: `npm install -g supabase`.
+2. Initialize project: `supabase init` in repo root.
+3. Create new Supabase project at supabase.com; copy `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
+4. Add to `.env.local` in `frontend`:
+    
+    ```
+    VITE_SUPABASE_URL=...
+    VITE_SUPABASE_ANON_KEY=...
+    
+    ```
+    
+5. In Supabase Dashboard, define tables: `users`, `profiles`, `grants`, `votes`, `nfts`, `funding_rounds`.
+6. Write Edge Functions in `supabase/functions`:
+    - `mint-nft.ts`: Mint NFT and upload metadata JSON to Supabase Storage.
+    - `ai-grants.ts`: Filter static grants JSON via LLM.
+    - `faucet-tokens.ts`: Airdrop SPL TestTokens to DAO wallets.
+    - `award-winner.ts`: Identify top-voted project and award full pool; update NFT metadata.
+7. Deploy functions: `supabase functions deploy --project-ref your-ref`.
+
+### 4. Solana Devnet & NFT Minting
+
+1. Install Solana CLI (v1.14+).
+2. Create keypair: `solana-keygen new --outfile ~/.config/solana/devnet.json`.
+3. Set config: `solana config set --url https://api.devnet.solana.com --keypair ~/.config/solana/devnet.json`.
+4. Airdrop SOL: `solana airdrop 2`.
+5. In `mint-nft.ts`, use `@solana/web3.js` to mint NFT and store metadata URI in Supabase Storage and `nfts` table.
+
+### 5. AI Grants Integration
+
+1. Get API key from Google Gemini or OpenAI.
+2. In `ai-grants.ts`:
+    
+    ```
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {...})
+    const keywords = extractKeywords(response)
+    const grants = loadStaticGrants()
+    return grants.filter(g => matches(keywords, g)).slice(0,5)
+    
+    ```
+    
+
+### 6. Voting Flow Implementation (Winner Takes All)
+
+1. In `faucet-tokens.ts`, airdrop 100 TestTokens to `walletPublicKey`.
+2. Frontend voting:
+    
+    ```
+    const tx = new Transaction().add(createTransferInstruction(from, to, voterPubkey, 1))
+    await sendTransaction(tx, connection)
+    
+    ```
+    
+3. In `award-winner.ts` Edge Function:
+    
+    ```
+    const { data } = await sb.from('votes').select('founder_id, count(*)').group('founder_id').order('count', { ascending: false }).limit(1)
+    const winner = data[0].founder_id
+    // record award and update NFT metadata champion_badge:true
+    
+    ```
+    
+
+### 7. Frontend Features Integration
+
+1. **Auth**: Supabase Auth for founders & DAO via email + wallet connect.
+2. **Chat UI**: React component calling `/functions/ai-grants`.
+3. **Explore Page**: Fetch `/grants.json`, filter in React.
+4. **Apply Button**: Calls Edge Function to record application.
+5. **Wallet Connect**: `@solana/wallet-adapter-react` + Phantom.
+6. **Vote Button**: Trigger SPL transfer.
+7. **Award Trigger**: Manually invoke `award-winner` after voting period.
+
+### 8. Deployment to Vercel
+
+1. Install Vercel CLI: `npm i -g vercel`.
+2. Run `vercel` in repo; configure env vars: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SOLANA_KEYPAIR`, `AI_API_KEY`.
+3. Deploy and test voting-to-award flow.
+
+---
+
+*This guide reflects a **winner-takes-all** funding model for the GrantMatch hackathon MVP.*

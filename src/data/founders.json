@@ -1,0 +1,46 @@
+[
+  {
+    "id": 1,
+    "name": "Alex Chen",
+    "title": "Founder & CEO",
+    "company": "EcoTech Solutions",
+    "bio": "Building sustainable technology solutions for a greener future.",
+    "avatar": "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "skills": ["Sustainability", "Clean Energy", "Engineering"],
+    "appliedGrants": [3, 6],
+    "receivedGrants": [3]
+  },
+  {
+    "id": 2,
+    "name": "Sophia Rodriguez",
+    "title": "Co-founder & CTO",
+    "company": "BlockSecure",
+    "bio": "Developing blockchain security solutions to protect digital assets.",
+    "avatar": "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "skills": ["Blockchain", "Cybersecurity", "Cryptography"],
+    "appliedGrants": [1, 4],
+    "receivedGrants": [4]
+  },
+  {
+    "id": 3,
+    "name": "Marcus Johnson",
+    "title": "Founder",
+    "company": "HealthGuard AI",
+    "bio": "Creating AI solutions for better healthcare outcomes.",
+    "avatar": "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "skills": ["AI", "Healthcare", "Data Science"],
+    "appliedGrants": [2, 5],
+    "receivedGrants": []
+  },
+  {
+    "id": 4,
+    "name": "Priya Patel",
+    "title": "Founder & CEO",
+    "company": "RuralNet",
+    "bio": "Expanding internet access to underserved communities.",
+    "avatar": "https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "skills": ["Telecommunications", "Rural Development", "Infrastructure"],
+    "appliedGrants": [6],
+    "receivedGrants": []
+  }
+]

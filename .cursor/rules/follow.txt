@@ -1,0 +1,99 @@
+GrantMatch Build Guide (follow.txt)
+===================================
+
+Project Context
+---------------
+GrantMatch is a decentralized, AI-powered grant discovery and DAO voting platform. It helps underrepresented founders discover and apply for grants, and enables DAOs to transparently vote for projects using on-chain test tokens. The platform uses React (TypeScript), Vite, TailwindCSS, and Supabase for authentication, database, and storage. NFT profiles and on-chain voting are integrated via Solana Devnet.
+
+Main Features
+-------------
+- AI-powered grant discovery chat assistant
+- Grant exploration with search and filters
+- DAO voting (winner-takes-all model)
+- User profiles (founder/DAO funder) with NFT badges
+- Authentication (email/password, wallet connect)
+
+Codebase Structure
+------------------
+- `src/`
+  - `App.tsx`: Main app entry, routes, layout
+  - `main.tsx`: Vite/React entry point
+  - `index.css`: TailwindCSS and global styles
+  - `components/`: Layout, auth, explore, home, utils (custom router)
+  - `pages/`: Home, Explore, Discovery (chat), DAO, Profile
+  - `lib/supabase.ts`: Supabase client
+  - `data/`: Static JSON for grants, proposals, founders
+- `supabase/`: Migrations, Edge Functions (NFT mint, AI chat, voting, award)
+
+Step-by-Step Implementation
+---------------------------
+
+1. **Project Initialization**
+   - Install Git, Node.js (v18+), npm or Yarn
+   - Create GitHub repo and clone locally
+   - Initialize Vite React+TS project: `npm create vite@latest -- --template react-ts`
+   - Install dependencies: `npm install`
+   - Add TailwindCSS: `npm install tailwindcss postcss autoprefixer && npx tailwindcss init -p`
+   - Configure Tailwind in `index.css` and `tailwind.config.cjs`
+
+2. **Supabase Backend & Auth**
+   - Install Supabase CLI: `npm install -g supabase`
+   - `supabase init` in repo root
+   - Create Supabase project at supabase.com; copy `SUPABASE_URL` and `SUPABASE_ANON_KEY`
+   - Add to `.env.local`:
+     ```
+     VITE_SUPABASE_URL=...
+     VITE_SUPABASE_ANON_KEY=...
+     ```
+   - Define tables: `profiles`, `votes`, `nfts`, `funding_rounds` (see migration SQL for schema)
+   - Enable RLS and set policies for secure access
+
+3. **Frontend Features**
+   - **Auth**: Implement sign-up/sign-in with role selection (founder/dao_funder), profile creation
+   - **Profile Page**: Show user info, applied grants, votes, NFT achievements
+   - **Grant Discovery (Chat)**: Build chat UI; connect to Supabase Edge Function for AI grant matching
+   - **Explore Grants**: Fetch and filter static grants JSON; display with search/tags
+   - **DAO Voting**: Show proposals, enable voting (on-chain SPL token transfer via Solana Devnet)
+   - **NFT Profiles**: Mint NFT on signup, update metadata for winners
+
+4. **Solana Devnet & NFT Integration**
+   - Install Solana CLI; create keypair and airdrop SOL
+   - Use `@solana/web3.js` in Edge Functions for NFT minting and SPL token transfers
+   - Store NFT metadata JSON in Supabase Storage; link in `nfts` table
+   - On voting, transfer TestTokens; after round, award full pool to top-voted founder and update NFT badge
+
+5. **Edge Functions (Supabase)**
+   - `mint-nft.ts`: Mint NFT, upload metadata, store URI
+   - `ai-grants.ts`: Call LLM API, filter grants JSON, return matches
+   - `faucet-tokens.ts`: Airdrop TestTokens to DAO wallets
+   - `award-winner.ts`: Identify winner, record award, update NFT badge
+   - Deploy: `supabase functions deploy --project-ref <your-ref>`
+
+6. **Environment Variables**
+   - Set in `.env.local` and Vercel/production:
+     - `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `SOLANA_KEYPAIR`, `AI_API_KEY` (Gemini)
+
+7. **Testing & Deployment**
+   - Run locally: `npm run dev`
+   - Test all flows: signup, chat, explore, apply, vote, NFT minting, award
+   - Deploy frontend and Edge Functions to Vercel
+
+Data Models (Supabase/Postgres)
+-------------------------------
+- **profiles**: user_id, name, role, wallet_address, email, female_flag, region, mission, applied_grants_count
+- **votes**: id, voter_id, founder_id, token_amount, created_at
+- **nfts**: id, user_id, metadata_uri, champion_badge, created_at
+- **funding_rounds**: id, winner_id, tokens_awarded, round_ended_at
+
+Key Packages
+------------
+- `@supabase/supabase-js`, `@solana/web3.js`, `react`, `tailwindcss`, `vite`, `lucide-react`
+
+Tips
+----
+- Keep all `@import` statements at the top of CSS files
+- Use Supabase Edge Functions for all serverless logic (AI, NFT, voting)
+- Use Solana Devnet for all blockchain operations (no mainnet costs)
+- Store all sensitive keys in environment variables
+
+For more details, see the codebase, Supabase migration SQL, and Edge Function scripts. 

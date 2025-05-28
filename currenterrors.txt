@@ -1,0 +1,93 @@
+console - 
+equest URL
+http://localhost:54321/functions/v1/ai-grants
+Referrer Policy
+strict-origin-when-cross-origin
+content-type
+application/json
+referer
+http://localhost:5173/
+sec-ch-ua
+"Chromium";v="136", "Microsoft Edge";v="136", "Not.A/Brand";v="99"
+sec-ch-ua-mobile
+?1
+sec-ch-ua-platform
+"Android"
+user-agent
+Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36 Edg/136.0.0.0
+
+Request URL
+http://localhost:54321/functions/v1/ai-grants
+Request Method
+OPTIONS
+Status Code
+405 Method Not Allowed
+Remote Address
+[::1]:54321
+Referrer Policy
+strict-origin-when-cross-origin
+HTTP/1.1 405 Method Not Allowed
+Content-Type: text/plain;charset=UTF-8
+Content-Length: 50
+Connection: keep-alive
+vary: Accept-Encoding
+content-encoding: gzip
+date: Wed, 28 May 2025 13:11:16 GMT
+X-Kong-Upstream-Latency: 54
+X-Kong-Proxy-Latency: 1
+Via: kong/2.8.1
+accept
+*/*
+accept-encoding
+gzip, deflate, br, zstd
+accept-language
+en-US,en;q=0.9,en-IN;q=0.8
+access-control-request-headers
+content-type
+access-control-request-method
+POST
+connection
+keep-alive
+host
+localhost:54321
+origin
+http://localhost:5173
+referer
+http://localhost:5173/
+sec-fetch-dest
+empty
+sec-fetch-mode
+cors
+sec-fetch-site
+same-site
+user-agent
+Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36 Edg/136.0.0.0
+
+
+
+
+
+
+docker terminal log - 
+Error: Missing authorization header
+    at getAuthToken (file:///root/index.ts:82:11)
+    at Object.handler (file:///root/index.ts:123:23)
+    at respond (ext:sb_core_main_js/js/http.js:197:38)
+    at handleHttp (ext:sb_core_main_js/js/http.js:131:5)
+    at eventLoopTick (ext:core/01_core.js:168:7)
+serving the request with supabase/functions/ai-grants
+Download https://deno.land/std@0.181.0/http/server.ts
+Download https://deno.land/std@0.181.0/async/mod.ts
+Download https://deno.land/std@0.181.0/async/abortable.ts
+Download https://deno.land/std@0.181.0/async/deadline.ts
+Download https://deno.land/std@0.181.0/async/debounce.ts
+Download https://deno.land/std@0.181.0/async/deferred.ts
+Download https://deno.land/std@0.181.0/async/delay.ts
+Download https://deno.land/std@0.181.0/async/mux_async_iterator.ts
+Download https://deno.land/std@0.181.0/async/pool.ts
+Download https://deno.land/std@0.181.0/async/tee.ts
+Download https://deno.land/std@0.181.0/async/retry.ts
+[Info] Listening on http://localhost:9999/
+
+serving the request with supabase/functions/ai-grants
+[Info] Listening on http://localhost:9999/

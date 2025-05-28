@@ -1,0 +1,79 @@
+GrantMatch Project Context
+=========================
+
+Overview
+--------
+GrantMatch is a full-stack web application for discovering, applying to, and managing grants, with DAO-based voting and user profiles. It uses React (with TypeScript), Vite, TailwindCSS, and Supabase for authentication, database, and storage. The app features a custom router and a modular component structure.
+
+Main Features
+-------------
+- **Grant Discovery**: AI-powered chat assistant helps users find relevant grants.
+- **Grant Exploration**: Search and filter grants by tags, title, description, or organization.
+- **DAO Voting**: Users can vote on proposals, view active/passed proposals, and participate in governance.
+- **User Profiles**: Founders and DAO funders have profiles, can connect wallets, and view votes/NFT achievements.
+- **Authentication**: Email/password sign-in/up with role selection (founder or dao_funder), using Supabase Auth.
+
+Codebase Structure
+------------------
+- `src/`
+  - `App.tsx`: Main app entry, sets up routes and layout.
+  - `main.tsx`: Vite/React entry point.
+  - `index.css`: TailwindCSS and global styles.
+  - `components/`
+    - `layout/Header.tsx`: Responsive navigation, auth modal, user session logic.
+    - `auth/AuthModal.tsx`: Modal for sign-in/sign-up, role selection, profile creation.
+    - `explore/GrantCard.tsx`: UI for displaying grant details.
+    - `home/FeatureSection.tsx`, `home/Hero.tsx`: Home page sections.
+    - `utils/router.tsx`: Custom React context-based router (no react-router).
+  - `pages/`
+    - `HomePage.tsx`: Landing page.
+    - `ExplorePage.tsx`: Grant search/filter UI.
+    - `DiscoveryPage.tsx`: AI chat for grant matching.
+    - `DaoPage.tsx`: DAO proposal voting and display.
+    - `ProfilePage.tsx`: User profile, votes, NFT achievements.
+  - `lib/supabase.ts`: Supabase client initialization (env-based config).
+  - `data/`: Static JSON data for grants, proposals, founders.
+
+Data Models (Supabase/Postgres)
+------------------------------
+- **profiles**: User info (name, role, email, wallet, region, mission, female_flag, etc.), linked to auth.users.
+- **votes**: DAO funder votes for founders, with token amounts and timestamps.
+- **nfts**: NFT metadata and badges, linked to users.
+- **funding_rounds**: Tracks completed funding rounds and token awards.
+- **RLS & Policies**: Row-level security enabled, with policies for user access and role-based actions.
+
+Static Data
+-----------
+- `grants.json`: List of grant opportunities (title, org, amount, deadline, tags, requirements).
+- `proposals.json`: DAO proposals (title, description, proposer, votes, status, end date).
+- `founders.json`: Example founder profiles (name, company, skills, grants applied/received).
+
+Key Packages
+------------
+- `@supabase/supabase-js`: Supabase client for auth and DB.
+- `react`, `lucide-react`: UI and icons.
+- `tailwindcss`: Utility-first CSS framework.
+- `vite`: Build tool.
+
+How Routing Works
+-----------------
+- Custom router using React context (`RouterProvider`, `Route`, `Routes`).
+- Navigation and location managed in context, with browser history sync.
+
+Authentication & Profiles
+-------------------------
+- Sign-up flow collects role (founder/dao_funder), name, and (if founder) region, mission, female-led flag.
+- Profiles stored in `profiles` table, linked to Supabase Auth user.
+- Auth state managed in header, with modal for sign-in/up.
+
+DAO & Voting
+------------
+- DAO funders can vote on proposals and founders.
+- Proposals and votes are displayed with stats and status.
+- NFT achievements shown on profile page.
+
+Environment Variables
+---------------------
+- `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` required for Supabase client.
+
+For more details, see the code in each directory and the Supabase migration SQL for schema and policies. 

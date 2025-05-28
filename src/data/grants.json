@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "title": "Open Source Infrastructure Grant",
+    "organization": "Web3 Foundation",
+    "amount": 25000,
+    "deadline": "2025-03-15",
+    "description": "Supporting innovative open-source projects that enhance web3 infrastructure.",
+    "tags": ["infrastructure", "open-source", "web3"],
+    "requirements": ["Open source project", "Active GitHub repository", "Clear roadmap"]
+  },
+  {
+    "id": 2,
+    "title": "AI Safety Research Fund",
+    "organization": "Future of AI Consortium",
+    "amount": 75000,
+    "deadline": "2025-04-30",
+    "description": "Funding research to ensure AI systems remain aligned with human values.",
+    "tags": ["ai", "research", "safety"],
+    "requirements": ["PhD in relevant field", "Published research", "University affiliation"]
+  },
+  {
+    "id": 3,
+    "title": "Climate Tech Innovation Grant",
+    "organization": "Sustainable Future Foundation",
+    "amount": 50000,
+    "deadline": "2025-02-28",
+    "description": "Supporting startups developing technology to combat climate change.",
+    "tags": ["climate", "sustainability", "innovation"],
+    "requirements": ["Prototype demonstration", "Impact metrics", "Scaling plan"]
+  },
+  {
+    "id": 4,
+    "title": "DeFi Ecosystem Development",
+    "organization": "DeFi Alliance",
+    "amount": 35000,
+    "deadline": "2025-03-31",
+    "description": "Supporting projects that enhance decentralized finance infrastructure and usability.",
+    "tags": ["defi", "blockchain", "finance"],
+    "requirements": ["Working prototype", "Technical documentation", "Security audit"]
+  },
+  {
+    "id": 5,
+    "title": "Healthcare Data Privacy Solutions",
+    "organization": "MedTech Innovation Fund",
+    "amount": 60000,
+    "deadline": "2025-05-15",
+    "description": "Funding innovative approaches to protecting healthcare data while enabling research.",
+    "tags": ["healthcare", "privacy", "data"],
+    "requirements": ["HIPAA compliance", "Data security plan", "Partnership with healthcare provider"]
+  },
+  {
+    "id": 6,
+    "title": "Rural Internet Access Project",
+    "organization": "Digital Divide Foundation",
+    "amount": 45000,
+    "deadline": "2025-04-15",
+    "description": "Supporting solutions that bring reliable internet to underserved rural communities.",
+    "tags": ["rural", "connectivity", "infrastructure"],
+    "requirements": ["Pilot implementation plan", "Community partnerships", "Sustainability model"]
+  }
+]

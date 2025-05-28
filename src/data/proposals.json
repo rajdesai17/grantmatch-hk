@@ -1,0 +1,67 @@
+[
+  {
+    "id": 1,
+    "title": "Add Climate Tech as Priority Category",
+    "description": "Increase funding allocation for climate technology grants from 15% to 25% of total budget.",
+    "proposer": "Alex Chen",
+    "votes": {
+      "for": 782,
+      "against": 145,
+      "abstain": 33
+    },
+    "status": "Active",
+    "endDate": "2025-03-20"
+  },
+  {
+    "id": 2,
+    "title": "New Grant Committee Members",
+    "description": "Add three new domain experts to the grant approval committee to improve diversity of expertise.",
+    "proposer": "Sophia Rodriguez",
+    "votes": {
+      "for": 651,
+      "against": 201,
+      "abstain": 48
+    },
+    "status": "Active",
+    "endDate": "2025-03-15"
+  },
+  {
+    "id": 3,
+    "title": "Increase Grant Size Cap",
+    "description": "Raise maximum grant amount from $75,000 to $100,000 for high-impact projects.",
+    "proposer": "Marcus Johnson",
+    "votes": {
+      "for": 423,
+      "against": 379,
+      "abstain": 52
+    },
+    "status": "Active",
+    "endDate": "2025-03-25"
+  },
+  {
+    "id": 4,
+    "title": "Simplify Application Process",
+    "description": "Streamline the application form and reduce required documentation for initial submissions.",
+    "proposer": "Priya Patel",
+    "votes": {
+      "for": 892,
+      "against": 87,
+      "abstain": 21
+    },
+    "status": "Passed",
+    "endDate": "2025-02-28"
+  },
+  {
+    "id": 5,
+    "title": "Add Quarterly Progress Reports",
+    "description": "Require quarterly updates from grant recipients to ensure funds are used effectively.",
+    "proposer": "Alex Chen",
+    "votes": {
+      "for": 734,
+      "against": 201,
+      "abstain": 65
+    },
+    "status": "Passed",
+    "endDate": "2025-02-15"
+  }
+]
