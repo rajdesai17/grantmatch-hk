@@ -21,7 +21,7 @@ const DiscoveryPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const apiBase = import.meta.env.DEV ? 'http://localhost:54321' : '';
+  const functionUrl = import.meta.env.VITE_FUNCTION_URL;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -49,7 +49,7 @@ const DiscoveryPage: React.FC = () => {
       if (import.meta.env.DEV) {
         headers['Authorization'] = `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`;
       }
-      const res = await fetch(`${apiBase}/functions/v1/ai-grants`, {
+      const res = await fetch(`${functionUrl}/ai-grants`, {
         method: 'POST',
         headers,
         body: JSON.stringify({ query: input })
