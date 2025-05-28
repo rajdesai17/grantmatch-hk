@@ -33,6 +33,7 @@
 - Started scaffolding required Edge Functions: mint-nft, ai-grants, faucet-tokens, award-winner.
 - Scaffolded all required Edge Functions: ai-grants, mint-nft, faucet-tokens, award-winner.
 - Refactored DiscoveryPage to use the ai-grants Edge Function for real AI-powered grant matching instead of demo logic.
+- DiscoveryPage now always sends the Authorization header with the anon key for Supabase Edge Function requests, fixing 401 errors when JWT verification is enforced.
 
 ---
 Update this file after every major change for project memory and context. 
