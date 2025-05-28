@@ -45,10 +45,8 @@ const DiscoveryPage: React.FC = () => {
     try {
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
       };
-      if (import.meta.env.DEV) {
-        headers['Authorization'] = `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`;
-      }
       const res = await fetch(`${functionUrl}/ai-grants`, {
         method: 'POST',
         headers,
