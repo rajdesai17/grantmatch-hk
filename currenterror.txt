@@ -1,0 +1,163 @@
+PS C:\Users\Raj\Downloads\version2-grantmatch\project> supabase functions deploy mint-nft --project-ref nuwrcksgrundckjaykks
+Bundling Function: mint-nft
+Download https://deno.land/std@0.177.0/http/server.ts
+Download https://esm.sh/@solana/web3.js@1.89.2
+Download https://esm.sh/@solana/spl-token@1.0.1
+Download https://esm.sh/@metaplex-foundation/mpl-token-metadata@2.3.0
+Download https://deno.land/std@0.177.0/async/mod.ts
+Download https://esm.sh/@noble/curves@^1.2.0/ed25519?target=es2022
+Download https://esm.sh/@noble/curves@^1.2.0/secp256k1?target=es2022
+Download https://esm.sh/@noble/hashes@^1.3.2/sha256?target=es2022
+Download https://esm.sh/@noble/hashes@^1.3.2/sha3?target=es2022
+Download https://esm.sh/@solana/buffer-layout@^4.0.1?target=es2022
+Download https://esm.sh/bigint-buffer@^1.1.5?target=es2022
+Download https://esm.sh/bn.js@^5.2.1?target=es2022
+Download https://esm.sh/borsh@^0.7.0?target=es2022
+Download https://esm.sh/bs58@^4.0.1?target=es2022
+Download https://esm.sh/jayson@^4.1.0/lib/client/browser?target=es2022
+Download https://esm.sh/node/buffer.mjs
+Download https://esm.sh/node/http.mjs
+Download https://esm.sh/node/https.mjs
+Download https://esm.sh/node/process.mjs
+Download https://esm.sh/node/util.mjs
+Download https://esm.sh/rpc-websockets@^7.5.1/dist/lib/client/websocket?target=es2022
+Download https://esm.sh/rpc-websockets@^7.5.1/dist/lib/client?target=es2022
+Download https://esm.sh/superstruct@^0.14.2?target=es2022
+Download https://esm.sh/@solana/web3.js@1.89.2/es2022/web3.mjs
+Download https://esm.sh/@metaplex-foundation/beet-solana@^0.3.0?target=es2022
+Download https://esm.sh/@metaplex-foundation/beet@^0.4.0?target=es2022
+Download https://esm.sh/@metaplex-foundation/cusper@^0.0.2?target=es2022
+Download https://esm.sh/@solana/spl-token@^0.2.0?target=es2022
+Download https://esm.sh/@solana/web3.js@^1.35.1?target=es2022
+Download https://esm.sh/@metaplex-foundation/mpl-token-metadata@2.3.0/es2022/mpl-token-metadata.mjs
+Download https://deno.land/std@0.177.0/async/abortable.ts
+Download https://deno.land/std@0.177.0/async/deadline.ts
+Download https://deno.land/std@0.177.0/async/debounce.ts
+Download https://deno.land/std@0.177.0/async/deferred.ts
+Download https://deno.land/std@0.177.0/async/delay.ts
+Download https://deno.land/std@0.177.0/async/mux_async_iterator.ts
+Download https://deno.land/std@0.177.0/async/pool.ts
+Download https://deno.land/std@0.177.0/async/tee.ts
+Download https://deno.land/std@0.177.0/async/retry.ts
+Download https://esm.sh/@noble/curves@1.9.1/es2022/abstract/curve.mjs
+Download https://esm.sh/@noble/curves@1.9.1/es2022/abstract/edwards.mjs
+Download https://esm.sh/@noble/curves@1.9.1/es2022/abstract/hash-to-curve.mjs
+Download https://esm.sh/@noble/curves@1.9.1/es2022/abstract/modular.mjs
+Download https://esm.sh/@noble/curves@1.9.1/es2022/abstract/montgomery.mjs
+Download https://esm.sh/@noble/curves@1.9.1/es2022/abstract/utils.mjs
+Download https://esm.sh/@noble/hashes@1.8.0/es2022/sha2.mjs
+Download https://esm.sh/@noble/hashes@1.8.0/es2022/utils.mjs
+Download https://esm.sh/@noble/curves@1.9.1/es2022/ed25519.mjs
+Download https://esm.sh/@noble/curves@1.9.1/es2022/_shortw_utils.mjs
+Download https://esm.sh/@noble/curves@1.9.1/es2022/abstract/weierstrass.mjs
+Download https://esm.sh/@noble/curves@1.9.1/es2022/secp256k1.mjs
+Download https://esm.sh/@noble/hashes@1.8.0/es2022/sha256.mjs
+Download https://esm.sh/@noble/hashes@1.8.0/es2022/sha3.mjs
+Download https://esm.sh/@solana/buffer-layout@4.0.1/es2022/buffer-layout.mjs
+Download https://esm.sh/bindings@^1.3.0?target=es2022
+Download https://esm.sh/bigint-buffer@1.1.5/es2022/bigint-buffer.mjs
+Download https://esm.sh/bn.js@5.2.2/es2022/bn.mjs
+Download https://esm.sh/bn.js@^5.2.0?target=es2022
+Download https://esm.sh/bs58@^4.0.0?target=es2022
+Download https://esm.sh/text-encoding-utf-8@^1.0.2?target=es2022
+Download https://esm.sh/borsh@0.7.0/es2022/borsh.mjs
+Download https://esm.sh/base-x@^3.0.2?target=es2022
+Download https://esm.sh/bs58@4.0.1/es2022/bs58.mjs
+Download https://esm.sh/uuid@^8.3.2?target=es2022
+Download https://esm.sh/jayson@4.2.0/es2022/lib/client/browser.mjs
+Download https://esm.sh/node/net.mjs
+Download https://esm.sh/node/stream.mjs
+Download https://esm.sh/node/chunk-QVIHGVPD.mjs
+Download https://esm.sh/ws@^8.5.0?target=es2022
+Download https://esm.sh/rpc-websockets@7.11.2/es2022/dist/lib/client/websocket.mjs
+Download https://esm.sh/eventemitter3@^4.0.7?target=es2022
+Download https://esm.sh/rpc-websockets@7.11.2/es2022/dist/lib/client.mjs
+Download https://esm.sh/superstruct@0.14.2/es2022/superstruct.mjs
+Download https://esm.sh/@metaplex-foundation/beet@%3E=0.1.0?target=es2022
+Download https://esm.sh/@solana/web3.js@^1.56.2?target=es2022
+Download https://esm.sh/bs58@^5.0.0?target=es2022
+Download https://esm.sh/debug@^4.3.4?target=es2022
+Download https://esm.sh/node/assert.mjs
+Download https://esm.sh/@metaplex-foundation/beet-solana@0.3.1/es2022/beet-solana.mjs
+Download https://esm.sh/ansicolors@^0.3.2?target=es2022
+Download https://esm.sh/debug@^4.3.3?target=es2022
+Download https://esm.sh/@metaplex-foundation/beet@0.4.0/es2022/beet.mjs
+Download https://esm.sh/@metaplex-foundation/cusper@0.0.2/es2022/cusper.mjs
+Download https://esm.sh/@solana/buffer-layout-utils@^0.2.0?target=es2022
+Download https://esm.sh/@solana/buffer-layout@^4.0.0?target=es2022
+Download https://esm.sh/@solana/web3.js@^1.32.0?target=es2022
+Download https://esm.sh/@solana/spl-token@0.2.0/es2022/spl-token.mjs
+Download https://esm.sh/@noble/curves@^1.4.2/ed25519?target=es2022
+Download https://esm.sh/@noble/curves@^1.4.2/secp256k1?target=es2022
+Download https://esm.sh/@noble/hashes@^1.4.0/sha256?target=es2022
+Download https://esm.sh/@noble/hashes@^1.4.0/sha3?target=es2022
+Download https://esm.sh/@solana/codecs-numbers@^2.1.0?target=es2022
+Download https://esm.sh/jayson@^4.1.1/lib/client/browser?target=es2022
+Download https://esm.sh/rpc-websockets@^9.0.2?target=es2022
+Download https://esm.sh/superstruct@^2.0.2?target=es2022
+Download https://esm.sh/@solana/web3.js@1.98.2/es2022/web3.mjs
+Download https://esm.sh/@noble/hashes@1.8.0/es2022/_md.mjs
+Download https://esm.sh/@noble/hashes@1.8.0/es2022/crypto.mjs
+Download https://esm.sh/@noble/hashes@1.8.0/es2022/hmac.mjs
+Download https://esm.sh/file-uri-to-path@1.0.0/es2022/file-uri-to-path.mjs
+Download https://esm.sh/node/fs.mjs
+Download https://esm.sh/node/path.mjs
+Download https://esm.sh/bindings@1.5.0/es2022/bindings.mjs
+Download https://esm.sh/text-encoding-utf-8@1.0.2/es2022/text-encoding-utf-8.mjs
+Download https://esm.sh/safe-buffer@^5.0.1?target=es2022
+Download https://esm.sh/base-x@3.0.11/es2022/base-x.mjs
+Download https://esm.sh/uuid@8.3.2/es2022/uuid.mjs
+Download https://esm.sh/node/chunk-WV3DHSZU.mjs
+Download https://esm.sh/node/chunk-AAUDITJX.mjs
+Download https://esm.sh/ws@8.18.2/es2022/ws.mjs
+Download https://esm.sh/eventemitter3@4.0.7/es2022/eventemitter3.mjs
+Download https://esm.sh/@metaplex-foundation/beet@0.7.2/es2022/beet.mjs
+Download https://esm.sh/base-x@^4.0.0?target=es2022
+Download https://esm.sh/bs58@5.0.0/es2022/bs58.mjs
+Download https://esm.sh/ms@^2.1.3?target=es2022
+Download https://esm.sh/debug@4.4.1/es2022/debug.mjs
+Download https://esm.sh/node/chunk-IE5RLQX2.mjs
+Download https://esm.sh/ansicolors@0.3.2/es2022/ansicolors.mjs
+Download https://esm.sh/@solana/buffer-layout-utils@0.2.0/es2022/buffer-layout-utils.mjs
+Download https://esm.sh/@solana/codecs-core@2.1.1/es2022/codecs-core.mjs
+Download https://esm.sh/@solana/errors@2.1.1/es2022/errors.mjs
+Download https://esm.sh/@solana/codecs-numbers@2.1.1/es2022/codecs-numbers.mjs
+Download https://esm.sh/eventemitter3@^5.0.1?target=es2022
+Download https://esm.sh/rpc-websockets@9.1.1/es2022/rpc-websockets.mjs
+Download https://esm.sh/superstruct@2.0.2/es2022/superstruct.mjs
+Download https://esm.sh/node/chunk-5A4BT3HD.mjs
+Download https://esm.sh/node/chunk-KJ4M6W4Z.mjs
+Download https://esm.sh/safe-buffer@5.2.1/es2022/safe-buffer.mjs
+Download https://esm.sh/node/events.mjs
+Download https://esm.sh/base-x@4.0.1/es2022/base-x.mjs
+Download https://esm.sh/ms@2.1.3/es2022/ms.mjs
+Download https://esm.sh/bignumber.js@^9.0.1?target=es2022
+Download https://esm.sh/eventemitter3@5.0.1/es2022/eventemitter3.mjs
+Download https://esm.sh/node/async_hooks.mjs
+Download https://esm.sh/bignumber.js@9.3.0/es2022/bignumber.mjs
+Error: failed to create the graph
+
+Caused by:
+    Module not found "https://esm.sh/@solana/spl-token@1.0.1".
+        at file:///Users/Raj/Downloads/version2-grantmatch/project/supabase/functions/mint-nft/index.ts:3:71
+error running container: exit 1
+Try rerunning the command with --debug to troubleshoot the error.
+
+
+
+Solana AI Response - Your error indicates that the module @solana/spl-token@1.0.1 could not be found at esm.sh. According to the official Solana documentation, the SPL Token CLI is typically installed using Cargo with:
+
+cargo install spl-token-cli
+1, 2
+
+For JavaScript/TypeScript, the @solana/spl-token npm package is referenced, but there is no explicit documentation for a 1.0.1 version or any guarantee that esm.sh supports every npm version. The documentation does not specify using esm.sh, but does reference the package by its npm name2. If you are unable to fetch this version, it's possible that:
+
+The version doesn't exist on npm.
+esm.sh does not support this version.
+What you can do:
+
+Check the npm page for @solana/spl-token to confirm which versions are available.
+Try using the version specified in npm or one that is known to work (such as the default for your tooling).
+If possible, avoid pinning to a specific version unless necessary.
+
+

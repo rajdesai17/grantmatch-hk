@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Award, FileText, Mail, Briefcase, ArrowUpRight } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { supabase, mintNft, uploadNftMetadata } from '../lib/supabase';
 import { useNavigate } from '../components/utils/router';
 
 interface Profile {
@@ -32,6 +32,9 @@ const ProfilePage: React.FC = () => {
   const [myProposals, setMyProposals] = useState<{ id: string; title: string; created_at?: string; status?: string }[]>([]);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [selectedProposal, setSelectedProposal] = useState<{ id: string; title: string; description?: string; created_at?: string; status?: string } | null>(null);
+  const [minting, setMinting] = useState(false);
+  const [mintError, setMintError] = useState<string | null>(null);
+  const [mintSuccess, setMintSuccess] = useState<{ mint: string; signature: string } | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -111,6 +114,72 @@ const ProfilePage: React.FC = () => {
   const handleViewDetails = (proposal: typeof myProposals[0]) => {
     setSelectedProposal(proposal);
     setDetailsModalOpen(true);
+  };
+
+  const handleMintNft = async () => {
+    setMinting(true);
+    setMintError(null);
+    setMintSuccess(null);
+    try {
+      if (!profile?.wallet_address) {
+        setMintError('Connect your wallet first.');
+        setMinting(false);
+        return;
+      }
+      // 1. Enforce one NFT per user
+      if (nfts.length > 0) {
+        setMintError('You already have an NFT profile.');
+        setMinting(false);
+        return;
+      }
+      // 2. Generate metadata from profile
+      const metadata = {
+        name: profile.name,
+        symbol: 'GMNFT',
+        description: 'GrantMatch Founder Profile NFT',
+        image: '', // Optionally add a profile image URL
+        attributes: [
+          { trait_type: 'Region', value: profile.region || '' },
+          { trait_type: 'Mission', value: profile.mission || '' },
+          { trait_type: 'Female-led', value: !!profile.female_flag },
+          { trait_type: 'Applied Grants', value: profile.applied_grants_count },
+          // Add more attributes as needed
+        ],
+      };
+      // 3. Upload metadata to Supabase Storage
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not found');
+      const metadata_uri = await uploadNftMetadata(user.id, metadata);
+      // 4. Mint NFT with real metadata URI
+      const data = await mintNft({
+        recipient_wallet: profile.wallet_address,
+        metadata_uri,
+        name: profile.name,
+        symbol: 'GMNFT',
+      });
+      setMintSuccess({ mint: data.mint, signature: data.signature });
+      // 5. Store NFT in nfts table
+      await supabase.from('nfts').insert({
+        user_id: user.id,
+        mint_address: data.mint,
+        metadata_uri,
+        created_at: new Date().toISOString(),
+      });
+      // Refresh NFT list
+      const { data: nftsData } = await supabase
+        .from('nfts')
+        .select('*')
+        .eq('user_id', profile.wallet_address);
+      setNfts(nftsData || []);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setMintError(err.message || 'Failed to mint NFT');
+      } else {
+        setMintError('Failed to mint NFT');
+      }
+    } finally {
+      setMinting(false);
+    }
   };
 
   if (loading) {
@@ -362,10 +431,16 @@ const ProfilePage: React.FC = () => {
               ) : (
                 <div className="card-bg rounded-xl p-6 text-center">
                   <p className="text-text-secondary mb-4">No NFT achievements yet.</p>
-                  {profile.role === 'founder' && (
-                    <button className="btn-secondary mx-auto">
-                      Apply for Grants
+                  {profile.role === 'founder' && profile.wallet_address && (
+                    <button className="btn-secondary mx-auto" onClick={handleMintNft} disabled={minting}>
+                      {minting ? 'Minting NFT...' : 'Mint NFT Achievement'}
                     </button>
+                  )}
+                  {mintError && <div className="text-red-500 mt-2">{mintError}</div>}
+                  {mintSuccess && (
+                    <div className="text-green-500 mt-2">
+                      NFT Minted! <a href={`https://explorer.solana.com/address/${mintSuccess.mint}?cluster=devnet`} target="_blank" rel="noopener noreferrer" className="underline">View on Solana Explorer</a>
+                    </div>
                   )}
                 </div>
               )}

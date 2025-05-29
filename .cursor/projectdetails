@@ -1,0 +1,186 @@
+# GrantMatch – Hackathon MVP Documentation
+
+---
+
+## 🔍 What is GrantMatch?
+
+GrantMatch is a **decentralized, AI-powered grant discovery and DAO voting platform** designed to help underrepresented founders — especially women-led NGOs and grassroots startups — find and apply for funding, while enabling transparent, community-driven funding decisions.
+
+It combines Web3, AI, and reputation-based systems to reimagine how small projects get discovered, supported, and celebrated.
+
+---
+
+## 🚨 The Problem
+
+- **Difficult discovery:** Women-led or rural initiatives struggle to find relevant grants.
+- **Manual effort:** Proposal writing and submission is time-consuming and scattered.
+- **Lack of trust:** Funders lack transparent metrics and proof of impact or reputation.
+
+---
+
+## 💡 The Solution
+
+GrantMatch solves this with a clean, powerful experience:
+
+1. **AI-Powered Grant Matching**: A chatbot helps founders discover relevant grants.
+2. **Decentralized Voting**: DAOs and individuals vote on proposals using on-chain tokens.
+3. **NFT-Based Profiles**: Each founder and funder gets an NFT identity that evolves with their journey.
+
+---
+
+## 🚀 Core Features
+
+### 🧠 AI-Driven Grant Match
+
+- Chat interface with LLM that filters grant JSON data.
+- Matches grants by keywords (region, focus, org type).
+
+### 🔍 Browse & Apply
+
+- Explore grants with filters (region, deadline, org).
+- Click "Apply" to increment applied count.
+
+### 🗳️ DAO Voting (Winner-Takes-All)
+
+- Users vote using SPL TestTokens (1 token per vote).
+- Winning project gets all remaining tokens in the pool.
+- Voting tracked in `votes` table, outcomes stored in `funding_rounds`.
+
+### 👤 NFT Profiles
+
+- Auto-minted on Solana Devnet for each user.
+- Metadata includes mission, region, gender flag, applied grants, badges.
+
+### ♀️ Female Founder Support
+
+- `female_flag` on signup (self-attested).
+- Platform highlights and special badge in NFT.
+
+### 🗂️ Proposal Creation
+
+- Founders can create proposals with title, description, and optional grant links.
+- DAO tab displays active proposals with vote status.
+
+---
+
+## 🏆 Highlight Features
+
+### ✅ 1. AI Chat Grant Matching
+
+Ask. Match. Apply. A conversational flow makes grant discovery feel like chatting with a mentor.
+
+### ✅ 2. On-Chain Reputation
+
+Profiles are NFTs! Voting, funding wins, and diversity are recorded on-chain for transparency.
+
+### ✅ 3. Winner Takes All Voting
+
+TestToken voting where the most-voted founder wins the entire funding pot. Simple and game-changing.
+
+### ✅ 4. Female-First Support
+
+Female founders are celebrated, flagged, and surfaced to promote inclusive funding.
+
+### ✅ 5. Real Rewards for Voters
+
+### 🎁 Kudos Token Airdrop
+
+- Native SPL token: `KMATCH` on Solana Devnet.
+- For every vote (1 TestToken spent), voters earn 0.1 KMATCH back.
+
+### 🪙 100 TestToken Faucet
+
+- On first wallet connect, voters receive 100 TestTokens to cast votes.
+
+### 📈 Voter Leaderboard
+
+- UI leaderboard ranks voters by tokens spent.
+- Adds friendly competition and motivation.
+
+### 🏅 On-Chain Voter Badge
+
+NFT Profile of funders tracks:
+
+```json
+{
+  "trait_type": "Votes Cast",
+  "value": 12
+}
+
+```
+
+Top 3 voters receive cosmetic “🥇 Top Voter” badge:
+
+```json
+{
+  "trait_type": "Top Voter",
+  "value": "🥇"
+}
+
+```
+
+Top KMATCH holders may receive demo rewards like:
+
+- Governance Pass
+- Early access to new grants
+- Hidden proposals
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend**: React + TypeScript + TailwindCSS (Vite)
+- **Backend**: Supabase (Auth, DB, Storage)
+- **Blockchain**: Solana Devnet, SPL Tokens, Phantom Wallet
+- **AI**: Google Gemini / OpenAI (via Supabase Edge Functions)
+
+---
+
+## 🔁 How It Works (Simplified Flow)
+
+### 1. Signup
+
+- User signs up as founder or funder.
+- NFT profile minted with metadata in Supabase Storage.
+
+### 2. Grant Discovery
+
+- LLM chat filters static JSON grants and shows top 5 matches.
+- Explore tab offers manual browsing.
+
+### 3. Proposal Creation
+
+- Founders submit proposals.
+- Visible in DAO section for voting.
+
+### 4. Voting
+
+- Wallet connects → 100 TestTokens airdropped.
+- Each vote costs 1 TestToken.
+- Each vote earns 0.1 KMATCH token.
+- Top voter = Top badge + visibility.
+- Top project = Wins all remaining tokens.
+
+### 5. Reputation Tracking
+
+- Votes cast and tokens spent recorded in Supabase.
+- NFT metadata updated post-voting.
+
+---
+
+## 🌍 Impact Vision
+
+- **Empower Female & Rural Founders**: Democratize access to funding.
+- **On-chain Transparency**: Immutable records of support, votes, and wins.
+- **Gamified Participation**: Voters are no longer passive — they’re incentivized to engage.
+- **Proof of Reputation**: NFT profile doubles as public resume for grant-seekers.
+
+---
+
+## 📌 TL;DR
+
+GrantMatch is where grants meet the blockchain, and founders meet their community. AI finds the best-fit grants, DAOs vote transparently, and NFT profiles track everyone’s journey — making funding fair, fun, and future-ready.
+
+---
+
+Let’s match the right ideas with the right support — transparently, inclusively, and on-chain.

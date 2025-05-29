@@ -4,15 +4,17 @@ import { useNavigate, useLocation } from '../utils/router';
 import { AuthModal } from '../auth/AuthModal';
 import { supabase } from '../../lib/supabase';
 import { useWallet } from '../../lib/useWallet';
+import { User } from '@supabase/supabase-js';
 
 const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [walletError, setWalletError] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const { publicKey, connected, connect, disconnect } = useWallet();
+  const { publicKey, connected, disconnect } = useWallet();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -52,6 +54,37 @@ const Header: React.FC = () => {
   ];
 
   const isActive = (path: string) => location.pathname === path;
+
+  // Handler for linking wallet to logged-in user
+  const handleLinkWallet = async () => {
+    setWalletError(null);
+    try {
+      const walletAddress = publicKey?.toBase58();
+      if (!walletAddress || !user?.id) {
+        setWalletError('Wallet or user not found.');
+        return;
+      }
+      const { error } = await supabase.functions.invoke('link-wallet', {
+        body: { wallet_address: walletAddress, user_id: user.id },
+      });
+      if (error) {
+        if (error.message?.includes('already linked')) {
+          setWalletError('This wallet is already linked to another account.');
+        } else {
+          setWalletError(error.message || 'Failed to link wallet.');
+        }
+        return;
+      }
+      // Optionally show a success message or update UI
+      setWalletError(null); // Clear any previous error
+    } catch (err) {
+      if (err instanceof Error) {
+        setWalletError(err.message || 'Failed to link wallet.');
+      } else {
+        setWalletError('Failed to link wallet.');
+      }
+    }
+  };
 
   return (
     <header
@@ -93,7 +126,7 @@ const Header: React.FC = () => {
                     <button onClick={disconnect} className="btn-secondary">Disconnect Wallet</button>
                   </div>
                 ) : (
-                  <button onClick={connect} className="btn-secondary">Connect Wallet</button>
+                  <button onClick={handleLinkWallet} className="btn-secondary">Connect Wallet</button>
                 )}
                 <button 
                   onClick={handleSignOut}
@@ -102,6 +135,9 @@ const Header: React.FC = () => {
                   <LogOut size={18} />
                   Sign Out
                 </button>
+                {walletError && (
+                  <div className="text-red-500 text-xs mt-1">{walletError}</div>
+                )}
               </div>
             ) : (
               <button 
@@ -154,7 +190,7 @@ const Header: React.FC = () => {
                     <button onClick={disconnect} className="btn-secondary w-full">Disconnect Wallet</button>
                   </div>
                 ) : (
-                  <button onClick={connect} className="btn-secondary w-full mb-2">Connect Wallet</button>
+                  <button onClick={handleLinkWallet} className="btn-secondary w-full mb-2">Connect Wallet</button>
                 )}
                 <button 
                   onClick={handleSignOut}
@@ -163,6 +199,9 @@ const Header: React.FC = () => {
                   <LogOut size={18} />
                   Sign Out
                 </button>
+                {walletError && (
+                  <div className="text-red-500 text-xs mt-1">{walletError}</div>
+                )}
               </>
             ) : (
               <button 
