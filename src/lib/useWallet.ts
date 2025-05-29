@@ -15,7 +15,6 @@ export function useWallet() {
   useEffect(() => {
     if (window.solana && window.solana.isPhantom) {
       setPhantomAvailable(true);
-      // Listen for connect/disconnect events
       window.solana.on('connect', () => {
         setPublicKey(new PublicKey(window.solana.publicKey.toString()));
         setConnected(true);
@@ -24,11 +23,6 @@ export function useWallet() {
         setPublicKey(null);
         setConnected(false);
       });
-      // If already connected, set state
-      if (window.solana.isConnected && window.solana.publicKey) {
-        setPublicKey(new PublicKey(window.solana.publicKey.toString()));
-        setConnected(true);
-      }
     } else {
       setPhantomAvailable(false);
     }
