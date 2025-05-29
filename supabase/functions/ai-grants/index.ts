@@ -4,6 +4,25 @@
 import { serve } from 'https://deno.land/std@0.181.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
+// Add CORS headers helper
+function corsHeaders() {
+  return {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Content-Type": "application/json",
+  };
+}
+
+// Define Grant type
+interface Grant {
+  id: string;
+  title: string;
+  organization: string;
+  description: string;
+  tags?: string[];
+  url?: string;
+}
 
 const supabaseUrl = Deno.env.get('VITE_SUPABASE_URL')!;
 const serviceRoleKey = Deno.env.get('SERVICE_ROLE_KEY')!;
@@ -67,38 +86,68 @@ serve(async (req) => {
     console.log('Fetched grants:', grants.map(g => ({ title: g.title, tags: g.tags })));
 
     // 3. Filter grants by keywords (title, description, tags)
-    const matches = grants.filter((grant: any) => {
+    const matches = (grants as Grant[]).filter((grant: Grant) => {
       const text = `${grant.title} ${grant.description} ${(grant.tags || []).join(' ')}`.toLowerCase();
       return keywords.some((kw: string) => text.includes(kw));
     });
 
-    // 4. Build detailed, personalized reasons for each match
-    function buildReason(grant: any, userQuery: string, matchedKeywords: string[]) {
-      // Find which keywords matched this grant
+    // Fallback buildReason function for LLM errors
+    function buildReason(grant: Grant, userQuery: string, matchedKeywords: string[]): string {
       const text = `${grant.title} ${grant.description} ${(grant.tags || []).join(' ')}`.toLowerCase();
       const grantMatched = matchedKeywords.filter(kw => text.includes(kw));
-      let reason = `This grant matches your project because it supports initiatives related to: ${grantMatched.join(', ')}.`;
-      if (grant.description) {
-        reason += ` ${grant.description.length > 120 ? grant.description.slice(0, 120) + '...' : grant.description}`;
+      const userMatched = grantMatched.filter(kw => userQuery.toLowerCase().includes(kw));
+      let reason = '';
+      if (userMatched.length > 0) {
+        reason = `Your project matches because it focuses on: ${userMatched.join(', ')}. `;
       }
-      reason += ' If your project aligns with these focus areas, you have a strong chance of being considered.';
-      return reason;
+      if (grantMatched.length > 0 && userMatched.length === 0) {
+        reason = `This grant supports: ${grantMatched.join(', ')}. `;
+      }
+      if (grant.description) {
+        const firstSentence = grant.description.split('. ')[0];
+        reason += firstSentence.length > 80 ? grant.description.slice(0, 80) + '...' : firstSentence;
+      }
+      return reason.trim();
     }
 
-    const detailedMatches = matches.slice(0, 5).map((g: any) => {
-      return {
+    // 4. For each top match, ask Gemini for a specific reason
+    const topMatches = matches.slice(0, 2); // Limit to 3 for performance
+    const detailedMatches: { title: string; organization: string; reason: string; id: string; url: string | null }[] = [];
+    for (const g of topMatches) {
+      let reason = '';
+      try {
+        const prompt = `User's project: ${query}\nGrant: ${g.title} (${g.organization})\nDescription: ${g.description}\nTags: ${(g.tags || []).join(', ')}\nIn 1-2 sentences, explain why this grant is a good fit for the user's project. Be specific and reference both the project and the grant.`;
+        const reasonBody = {
+          contents: [{ parts: [{ text: prompt }]}]
+        };
+        const reasonRes = await fetch(geminiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(reasonBody)
+        });
+        const reasonData = await reasonRes.json();
+        reason = reasonData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      } catch {
+        // fallback to previous logic
+        reason = buildReason(g, query, keywords);
+      }
+      detailedMatches.push({
         title: g.title,
         organization: g.organization,
-        reason: buildReason(g, query, keywords),
+        reason,
         id: g.id,
         url: g.url || null
-      };
-    });
+      });
+    }
 
-    // 5. Return detailed matches
+    // 5. Return detailed matches with user-friendly formatting and brevity
+    function firstTwoSentences(text: string): string {
+      const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+      return sentences.slice(0, 2).join(' ').trim();
+    }
     return new Response(JSON.stringify({
       message: detailedMatches.length > 0
-        ? `Top matching grants with reasons:\n${detailedMatches.map((g: any, i: number) => `- ${g.title} (${g.organization}): ${g.reason}`).join('\n\n')}`
+        ? `Top matching grants:\n\n${detailedMatches.map((g) => `• ${g.title} (${g.organization}):\n  ${firstTwoSentences(g.reason)}`).join('\n\n')}`
         : 'No relevant grants found.',
       grants: detailedMatches
     }), {
