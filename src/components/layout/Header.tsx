@@ -75,7 +75,15 @@ const Header: React.FC = () => {
         }
         return;
       }
-      // Optionally show a success message or update UI
+      // Update wallet_address in profiles table
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ wallet_address: walletAddress })
+        .eq('user_id', user.id);
+      if (updateError) {
+        setWalletError(updateError.message || 'Failed to update wallet address in profile.');
+        return;
+      }
       setWalletError(null); // Clear any previous error
     } catch (err) {
       if (err instanceof Error) {

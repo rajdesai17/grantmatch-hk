@@ -4,7 +4,7 @@ globs:
 alwaysApply: true
 ---
 # GrantMatch Build Rules (custom.mdc)
-
+Direct;y apply the changes step by step
 ## 1. Follow the Build Guide to impliment all features step by step mentioned in [features.txt](mdc:.cursor/features.txt)
 call supabase mcp if you have confusion about database structure.
 - Do not skip any steps; each is required for a successful build and deployment.
