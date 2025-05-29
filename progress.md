@@ -45,6 +45,17 @@
 - Scaffolded all required Edge Functions: ai-grants, mint-nft, faucet-tokens, award-winner.
 - Refactored DiscoveryPage to use the ai-grants Edge Function for real AI-powered grant matching instead of demo logic.
 - DiscoveryPage now always sends the Authorization header with the anon key for Supabase Edge Function requests, fixing 401 errors when JWT verification is enforced.
+- Updated Home page Hero section to reflect project mission and inclusivity
+- Expanded FeatureSection to showcase all unique features (AI chat, DAO voting, NFT profiles, female founder support, airdrop, leaderboard, on-chain reputation)
+- Added ImpactSection with project vision and TL;DR
+- Added tagline under logo in Header for mission reinforcement
+- Created and integrated Footer with links to GitHub, Docs, and Contact
+- Improved DiscoveryPage: AI chat is now more prominent, with a sidebar explaining how it works
+- Enhanced ExplorePage: Added deadline filter, improved filter UI, removed region filter for data consistency
+- DAO Voting page: Added Voter Leaderboard (top 10, top 3 with badges) and Winner Takes All explainer card at the top for gamification and clarity
+- Moved Voter Leaderboard to its own dedicated page with modern, clean UI and badges for top voters
+- Cleaned up DAO Voting page: removed inline leaderboard, improved spacing and card layouts, added prominent button to view leaderboard
+- Added navigation route for /leaderboard and back button to DAO Voting
 
 ---
 Update this file after every major change for project memory and context. 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { ThumbsUp, ThumbsDown, Clock, Check, User, FileText, X } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, Clock, Check, User, FileText, X, BarChart3, Award } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useNavigate } from '../components/utils/router';
 
 interface ProposalProps {
   id: string;
@@ -28,6 +29,7 @@ const ProposalCard: React.FC<{ proposal: ProposalProps; currentUserId?: string }
   const [userVote, setUserVote] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [voting, setVoting] = useState(false);
+  const [proposerProfile, setProposerProfile] = useState<{ female_flag?: boolean } | null>(null);
   const proposalId = proposal.id;
 
   useEffect(() => {
@@ -51,6 +53,20 @@ const ProposalCard: React.FC<{ proposal: ProposalProps; currentUserId?: string }
     };
     fetchVotes();
   }, [proposalId, currentUserId]);
+
+  useEffect(() => {
+    // Fetch proposer profile to check for female_flag
+    const fetchProposerProfile = async () => {
+      if (!proposal.proposer_id) return;
+      const { data } = await supabase
+        .from('profiles')
+        .select('female_flag')
+        .eq('user_id', proposal.proposer_id)
+        .single();
+      setProposerProfile(data);
+    };
+    fetchProposerProfile();
+  }, [proposal.proposer_id]);
 
   const handleVote = async (type: 'for' | 'against' | 'abstain') => {
     if (userVote || voting) return;
@@ -102,7 +118,13 @@ const ProposalCard: React.FC<{ proposal: ProposalProps; currentUserId?: string }
         
         <div className="flex items-center gap-2 mb-6 text-sm text-text-secondary">
           <User size={16} />
-          <span>Proposed by {proposal.profiles?.name || proposal.proposer || proposal.proposer_id || 'Unknown'}</span>
+          <span>Proposed by {proposal.profiles?.name || proposal.proposer || proposal.proposer_id || 'Unknown'}
+            {proposerProfile?.female_flag && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded bg-pink-200 text-pink-800 text-xs font-semibold ml-2">
+                <span className="mr-1">♀️</span> Female Founder
+              </span>
+            )}
+          </span>
         </div>
         
         <div className="mb-6">
@@ -174,6 +196,7 @@ const DaoPage: React.FC = () => {
   const [proposals, setProposals] = useState<any[]>([]);
   const [proposalsLoading, setProposalsLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -258,6 +281,21 @@ const DaoPage: React.FC = () => {
   return (
     <div className="pt-24 pb-16 px-4">
       <div className="container mx-auto">
+        {/* Winner Takes All Explainer */}
+        <div className="card-bg rounded-xl p-6 flex flex-col justify-center mb-10">
+          <h2 className="text-xl font-semibold mb-2 flex items-center text-accent-teal">
+            <Award size={22} className="mr-2" /> Winner Takes All Voting
+          </h2>
+          <p className="text-text-secondary text-sm">
+            Each vote costs 1 TestToken. The project with the most votes at the end of the round wins <span className="font-bold text-accent-teal">all remaining tokens</span> in the pool. Voters earn <span className="font-bold text-accent-warm">0.1 KMATCH</span> for every vote cast. Top 3 voters receive a special badge!
+          </p>
+          <button
+            className="mt-6 self-end btn-secondary flex items-center gap-2"
+            onClick={() => navigate('/leaderboard')}
+          >
+            <BarChart3 size={18} /> View Voter Leaderboard
+          </button>
+        </div>
         <div className="mb-12 text-center">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">DAO Voting</h1>
           <p className="text-text-secondary max-w-2xl mx-auto">

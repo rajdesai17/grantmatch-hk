@@ -147,7 +147,7 @@ serve(async (req) => {
     }
     return new Response(JSON.stringify({
       message: detailedMatches.length > 0
-        ? `Top matching grants:\n\n${detailedMatches.map((g) => `• ${g.title} (${g.organization}):\n  ${firstTwoSentences(g.reason)}`).join('\n\n')}`
+        ? `Top matching grants:<br><br>${detailedMatches.map((g) => `• ${g.title} (${g.organization}):<br>  ${firstTwoSentences(g.reason)}`).join('<br><br>')}`
         : 'No relevant grants found.',
       grants: detailedMatches
     }), {

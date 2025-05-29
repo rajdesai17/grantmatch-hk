@@ -212,58 +212,60 @@ const ProfilePage: React.FC = () => {
   }
 
   return (
-    <div className="pt-24 pb-16 px-4">
-      <div className="container mx-auto">
-        <div className="card-bg rounded-xl p-8 mb-10 relative overflow-hidden glow-subtle">
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-radial from-accent-teal to-transparent opacity-5 pointer-events-none"></div>
-          
-          <div className="flex flex-col md:flex-row gap-8 items-center md:items-start relative z-10">
+    <div className="pt-24 pb-16 px-4 min-h-screen bg-gradient-to-b from-background-dark to-background-light flex flex-col items-center">
+      <div className="container mx-auto max-w-3xl w-full">
+        <div className="card-bg rounded-2xl p-10 mb-12 relative overflow-hidden glow-subtle shadow-lg">
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-radial from-accent-teal to-transparent opacity-10 pointer-events-none"></div>
+          <div className="flex flex-col md:flex-row gap-10 items-center md:items-start relative z-10">
             <div className="relative">
-              <div className="w-32 h-32 rounded-xl bg-accent-subtle flex items-center justify-center text-4xl font-bold text-white">
+              <div className="w-36 h-36 rounded-2xl bg-accent-subtle flex items-center justify-center text-5xl font-bold text-white shadow-lg border-4 border-background">
                 {profile.name.charAt(0)}
               </div>
-              <div className="absolute -bottom-3 -right-3 bg-accent-teal rounded-full p-2">
-                <Award size={20} className="text-white" />
+              <div className="absolute -bottom-4 -right-4 bg-accent-teal rounded-full p-3 shadow-lg">
+                <Award size={28} className="text-white" />
               </div>
             </div>
-            
             <div className="flex-grow text-center md:text-left">
-              <h1 className="text-3xl font-bold mb-2">{profile.name}</h1>
-              <div className="flex items-center gap-2 mb-4 justify-center md:justify-start">
+              <h1 className="text-4xl font-bold mb-2 flex items-center justify-center md:justify-start gap-3 tracking-tight">
+                {profile.name}
+                {profile.female_flag && (
+                  <span className="inline-flex items-center px-3 py-1 rounded-full bg-pink-200 text-pink-800 text-sm font-semibold ml-2 gap-1">
+                    <Award size={16} className="text-pink-700" /> Female Founder
+                  </span>
+                )}
+              </h1>
+              <div className="flex items-center gap-3 mb-4 justify-center md:justify-start text-base">
                 <span className="text-text-secondary capitalize">{profile.role.replace('_', ' ')}</span>
                 {profile.female_flag && (
                   <>
                     <span className="text-text-secondary">•</span>
-                    <span className="text-accent-teal">Female-led</span>
+                    <span className="text-accent-teal font-semibold">Female-led</span>
                   </>
                 )}
               </div>
-              
               {profile.mission && (
-                <p className="text-text-secondary mb-6 max-w-2xl">{profile.mission}</p>
+                <p className="text-text-secondary mb-6 max-w-2xl text-lg font-medium">{profile.mission}</p>
               )}
-              
               {profile.region && (
                 <div className="flex flex-wrap gap-3 justify-center md:justify-start mb-6">
-                  <span className="bg-accent-subtle bg-opacity-30 text-text-secondary px-3 py-1 rounded-full text-sm">
+                  <span className="bg-accent-subtle bg-opacity-30 text-text-secondary px-4 py-1 rounded-full text-base font-medium">
                     {profile.region}
                   </span>
                 </div>
               )}
-              
-              <div className="flex gap-4 justify-center md:justify-start">
-                <button className="btn-primary">
-                  <Mail size={18} />
+              <div className="flex gap-4 justify-center md:justify-start mt-4">
+                <button className="btn-primary text-base px-6 py-2.5">
+                  <Mail size={20} />
                   Contact
                 </button>
                 {profile.wallet_address ? (
-                  <button className="btn-secondary">
-                    <Briefcase size={18} />
+                  <button className="btn-secondary text-base px-6 py-2.5">
+                    <Briefcase size={20} />
                     View Wallet
                   </button>
                 ) : (
                   <>
-                    <button className="btn-secondary" onClick={handleConnectWallet} disabled={walletLoading}>
+                    <button className="btn-secondary text-base px-6 py-2.5" onClick={handleConnectWallet} disabled={walletLoading}>
                       {walletLoading ? 'Connecting...' : 'Connect Wallet'}
                     </button>
                     {walletError && <div className="text-red-500 mt-2">{walletError}</div>}
@@ -273,16 +275,18 @@ const ProfilePage: React.FC = () => {
             </div>
           </div>
         </div>
-        
+        {/* Applied Grants */}
         {profile.role === 'founder' && (
-          <div className="card-bg rounded-xl p-6 mb-8">
-            <h2 className="text-xl font-semibold mb-4">Applied Grants</h2>
+          <div className="card-bg rounded-2xl p-8 mb-10 shadow-lg">
+            <h2 className="text-2xl font-bold mb-4 text-accent-teal flex items-center gap-2">
+              <Award size={22} className="text-accent-teal" /> Applied Grants
+            </h2>
             {appliedGrants.length > 0 ? (
-              <ul className="list-disc list-inside ml-4">
+              <ul className="list-disc list-inside ml-4 text-base">
                 {appliedGrants.map((app) => {
                   const a = app as { grant_id: number; grants?: { title?: string }; proposals?: { title?: string } };
                   return (
-                    <li key={a.grant_id}>
+                    <li key={a.grant_id} className="mb-1">
                       {a.grants?.title || 'Grant #' + a.grant_id}
                       {a.proposals?.title && (
                         <span className="text-text-secondary"> (via proposal: {a.proposals.title})</span>
@@ -296,17 +300,19 @@ const ProfilePage: React.FC = () => {
             )}
           </div>
         )}
-        
+        {/* My Proposals */}
         {profile.role === 'founder' && myProposals.length > 0 && (
-          <div className="card-bg rounded-xl p-6 mb-8">
-            <h2 className="text-xl font-semibold mb-4">My Created Proposals</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="card-bg rounded-2xl p-8 mb-10 shadow-lg">
+            <h2 className="text-2xl font-bold mb-4 text-accent-teal flex items-center gap-2">
+              <Award size={22} className="text-accent-teal" /> My Created Proposals
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {(() => {
                 const p = myProposals[0];
                 if (!p) return null;
                 const voteSummary = proposalVotes.find(v => v.title === p.title);
                 return (
-                  <div key={p.id} className="card-bg rounded-xl p-4 border border-gray-800">
+                  <div key={p.id} className="card-bg rounded-xl p-5 border border-background-light shadow-subtle">
                     <h3 className="text-lg font-bold mb-2">{p.title}</h3>
                     <div className="text-sm text-text-secondary mb-2">
                       Created: {p.created_at ? new Date(p.created_at).toLocaleDateString() : 'Unknown'}
@@ -328,7 +334,7 @@ const ProfilePage: React.FC = () => {
             </div>
             {detailsModalOpen && selectedProposal && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-                <div className="bg-background-dark rounded-xl shadow-lg max-w-md w-full p-8 relative">
+                <div className="bg-background-dark rounded-2xl shadow-lg max-w-md w-full p-8 relative">
                   <button
                     className="absolute top-4 right-4 text-text-secondary hover:text-white"
                     onClick={() => setDetailsModalOpen(false)}
@@ -356,61 +362,55 @@ const ProfilePage: React.FC = () => {
             )}
           </div>
         )}
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* NFT Achievements */}
-          <div>
-            <h2 className="text-2xl font-semibold mb-6 flex items-center">
-              <Award size={24} className="mr-2 text-accent-teal" />
-              NFT Achievements
-            </h2>
-            
-            <div className="space-y-4">
-              {nfts.length > 0 ? (
-                nfts.map((nft) => {
-                  const n = nft as { id: string; champion_badge?: boolean; created_at: string };
-                  return (
-                    <div key={n.id} className="card-bg rounded-xl overflow-hidden">
-                      <div className="p-5">
-                        <div className="flex justify-between items-start mb-4">
-                          <h3 className="font-medium">NFT #{n.id.slice(0, 8)}</h3>
-                          {n.champion_badge && (
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-accent-teal bg-opacity-20 text-accent-teal">
-                              Champion
-                            </span>
-                          )}
-                        </div>
-                        
-                        <div className="flex justify-between items-center text-sm">
-                          <span className="text-text-secondary">
-                            {new Date(n.created_at).toLocaleDateString()}
+        {/* NFT Achievements */}
+        <div className="card-bg rounded-2xl p-8 shadow-lg mb-10">
+          <h2 className="text-2xl font-bold mb-6 text-accent-teal flex items-center gap-2">
+            <Award size={24} className="mr-2 text-accent-teal" /> NFT Achievements
+          </h2>
+          <div className="space-y-4">
+            {nfts.length > 0 ? (
+              nfts.map((nft) => {
+                const n = nft as { id: string; champion_badge?: boolean; created_at: string };
+                return (
+                  <div key={n.id} className="card-bg rounded-xl overflow-hidden border border-background-light">
+                    <div className="p-5">
+                      <div className="flex justify-between items-start mb-4">
+                        <h3 className="font-medium">NFT #{n.id.slice(0, 8)}</h3>
+                        {n.champion_badge && (
+                          <span className="text-xs px-2 py-0.5 rounded-full bg-accent-teal bg-opacity-20 text-accent-teal">
+                            Champion
                           </span>
-                          <button className="text-accent-teal hover:underline flex items-center">
-                            View on Chain
-                            <ArrowUpRight size={14} className="ml-1" />
-                          </button>
-                        </div>
+                        )}
+                      </div>
+                      <div className="flex justify-between items-center text-sm">
+                        <span className="text-text-secondary">
+                          {new Date(n.created_at).toLocaleDateString()}
+                        </span>
+                        <button className="text-accent-teal hover:underline flex items-center">
+                          View on Chain
+                          <ArrowUpRight size={14} className="ml-1" />
+                        </button>
                       </div>
                     </div>
-                  );
-                })
-              ) : (
-                <div className="card-bg rounded-xl p-6 text-center">
-                  <p className="text-text-secondary mb-4">No NFT achievements yet.</p>
-                  {profile.role === 'founder' && profile.wallet_address && (
-                    <button className="btn-secondary mx-auto" onClick={handleMintNft} disabled={minting}>
-                      {minting ? 'Minting NFT...' : 'Mint NFT Achievement'}
-                    </button>
-                  )}
-                  {mintError && <div className="text-red-500 mt-2">{mintError}</div>}
-                  {mintSuccess && (
-                    <div className="text-green-500 mt-2">
-                      NFT Minted! <a href={`https://explorer.solana.com/address/${mintSuccess.mint}?cluster=devnet`} target="_blank" rel="noopener noreferrer" className="underline">View on Solana Explorer</a>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+                  </div>
+                );
+              })
+            ) :
+              <div className="card-bg rounded-xl p-6 text-center">
+                <p className="text-text-secondary mb-4">No NFT achievements yet.</p>
+                {profile.wallet_address && (
+                  <button className="btn-secondary mx-auto" onClick={handleMintNft} disabled={minting}>
+                    {minting ? 'Minting NFT...' : 'Mint NFT Achievement'}
+                  </button>
+                )}
+                {mintError && <div className="text-red-500 mt-2">{mintError}</div>}
+                {mintSuccess && (
+                  <div className="text-green-500 mt-2">
+                    NFT Minted! <a href={`https://explorer.solana.com/address/${mintSuccess.mint}?cluster=devnet`} target="_blank" rel="noopener noreferrer" className="underline">View on Solana Explorer</a>
+                  </div>
+                )}
+              </div>
+            }
           </div>
         </div>
       </div>

@@ -1,11 +1,13 @@
 import React from 'react';
 import { RouterProvider, Routes, Route } from './components/utils/router';
 import Header from './components/layout/Header';
+import Footer from './components/layout/Footer';
 import HomePage from './pages/HomePage';
 import ExplorePage from './pages/ExplorePage';
 import DiscoveryPage from './pages/DiscoveryPage';
 import DaoPage from './pages/DaoPage';
 import ProfilePage from './pages/ProfilePage';
+import LeaderboardPage from './pages/LeaderboardPage';
 import { useWallet } from './lib/useWallet';
 
 function App() {
@@ -26,8 +28,10 @@ function App() {
             <Route path="/discovery" element={<DiscoveryPage />} />
             <Route path="/dao" element={<DaoPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/leaderboard" element={<LeaderboardPage />} />
           </Routes>
         </main>
+        <Footer />
       </div>
     </RouterProvider>
   );

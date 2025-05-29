@@ -8,29 +8,28 @@ const Hero: React.FC = () => {
   return (
     <section className="relative gradient-bg pt-32 pb-20 px-4 overflow-hidden">
       <div className="container mx-auto text-center relative z-10">
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-text-primary leading-tight">
-          Discover Your Perfect Grant
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-text-primary leading-tight">
+          Empowering Founders. Funding Change.
         </h1>
-        
+        <h2 className="text-xl md:text-2xl font-medium text-accent-teal mb-6">
+          Transparent, Inclusive, and On-Chain Grant Discovery
+        </h2>
         <p className="text-text-secondary text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-          Connect with the right funding opportunities for your project. 
-          Our AI-powered platform matches founders with grants tailored to their unique vision.
+          GrantMatch connects underrepresented founders with the right support. Discover, apply, and grow with AI-powered matching, DAO voting, and NFT reputation — all on Solana Devnet.
         </p>
-        
         <div className="flex flex-col sm:flex-row justify-center gap-4 md:gap-6">
           <button 
             onClick={() => navigate('/discovery')}
             className="btn-primary"
           >
-            Start Discovery
+            Start Grant Discovery
             <ArrowRight size={18} />
           </button>
-          
           <button 
             onClick={() => navigate('/profile')}
             className="btn-secondary"
           >
-            Create Profile
+            Mint Your NFT Profile
           </button>
         </div>
       </div>

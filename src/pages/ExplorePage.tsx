@@ -12,7 +12,7 @@ interface Grant {
   deadline: string;
   description: string;
   tags: string[];
-  requirements: string[];
+  requirements?: string[];
 }
 
 const ExplorePage: React.FC = () => {
@@ -61,43 +61,45 @@ const ExplorePage: React.FC = () => {
   };
 
   return (
-    <div className="pt-24 pb-16 px-4">
-      <div className="container mx-auto">
+    <div className="pt-24 pb-16 px-4 min-h-screen bg-gradient-to-b from-background-dark to-background-light flex flex-col items-center">
+      <div className="container mx-auto max-w-7xl w-full">
         <div className="mb-12 text-center">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">Explore Grants</h1>
-          <p className="text-text-secondary max-w-2xl mx-auto">
+          <h1 className="text-4xl font-bold mb-3 tracking-tight">Explore Grants</h1>
+          <p className="text-text-secondary max-w-2xl mx-auto text-lg">
             Browse through available grants and find the perfect funding opportunity for your project.
           </p>
         </div>
-        <div className="mb-8">
-          <div className="relative w-full max-w-2xl mx-auto mb-6">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search size={20} className="text-gray-400" />
+        <div className="mb-10">
+          <div className="card-bg rounded-2xl shadow-lg p-6 max-w-3xl mx-auto mb-6 flex flex-col gap-4">
+            <div className="relative w-full">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search size={20} className="text-gray-400" />
+              </div>
+              <input
+                type="text"
+                placeholder="Search grants by title, description, or organization..."
+                className="w-full pl-10 pr-4 py-3 bg-background-dark border border-background-light rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-teal text-base"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
-            <input
-              type="text"
-              placeholder="Search grants by title, description, or organization..."
-              className="w-full pl-10 pr-4 py-3 bg-background-dark border border-gray-800 rounded-md text-text-primary focus:outline-none focus:ring-2 focus:ring-accent-teal"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="flex flex-wrap items-center gap-3 mb-6 justify-center">
-            <Filter size={18} className="text-text-secondary mr-1" />
-            <span className="text-text-secondary text-sm mr-2">Filter by tags:</span>
-            {allTags.map((tag, index) => (
-              <button 
-                key={index}
-                onClick={() => toggleTag(tag)}
-                className={`text-sm px-3 py-1 rounded-full transition-colors ${
-                  selectedTags.includes(tag)
-                    ? 'bg-accent-teal text-white'
-                    : 'bg-background-dark text-text-secondary border border-gray-700'
-                }`}
-              >
-                {tag}
-              </button>
-            ))}
+            <div className="flex flex-wrap items-center gap-3 justify-center">
+              <Filter size={18} className="text-text-secondary mr-1" />
+              <span className="text-text-secondary text-sm mr-2">Filter by tags:</span>
+              {allTags.map((tag, index) => (
+                <button 
+                  key={index}
+                  onClick={() => toggleTag(tag)}
+                  className={`text-sm px-3 py-1 rounded-full transition-colors font-medium tracking-wide ${
+                    selectedTags.includes(tag)
+                      ? 'bg-accent-teal text-white'
+                      : 'bg-background-dark text-text-secondary border border-gray-700'
+                  }`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
         {loading ? (
@@ -120,7 +122,7 @@ const ExplorePage: React.FC = () => {
         )}
         {selectedGrant && (
           <GrantDetailsModal 
-            grant={selectedGrant} 
+            grant={{ ...selectedGrant, requirements: selectedGrant.requirements || [] }} 
             open={detailsOpen} 
             onClose={() => setDetailsOpen(false)} 
           />

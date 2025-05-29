@@ -64,7 +64,7 @@ const Header: React.FC = () => {
     try {
       const walletAddress = publicKey?.toBase58();
       if (!walletAddress || !user?.id) {
-        setWalletError('Wallet or user not found. Please sign in and connect your wallet.');
+        setWalletError('');
         return;
       }
       const { error } = await supabase.functions.invoke('link-wallet', {
@@ -110,12 +110,17 @@ const Header: React.FC = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-4">
           <div className="flex items-center">
-            <h1 
-              className="text-xl font-semibold cursor-pointer"
-              onClick={() => navigate('/')}
-            >
-              GrantMatch
-            </h1>
+            <div>
+              <h1 
+                className="text-xl font-semibold cursor-pointer"
+                onClick={() => navigate('/')}
+              >
+                GrantMatch
+              </h1>
+              <span className="block text-xs md:text-sm text-accent-teal font-medium mt-1 ml-1 md:ml-0">
+                Transparent, Inclusive, and On-Chain Grant Discovery
+              </span>
+            </div>
           </div>
           
           {/* Desktop Navigation */}
