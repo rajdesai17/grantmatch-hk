@@ -3,7 +3,7 @@ import { Menu, X, LogOut } from 'lucide-react';
 import { useNavigate, useLocation } from '../utils/router';
 import { AuthModal } from '../auth/AuthModal';
 import { supabase } from '../../lib/supabase';
-import { useWallet, setOnConnect } from '../../lib/useWallet';
+import { useWallet } from '../../lib/useWallet';
 import { User } from '@supabase/supabase-js';
 
 const Header: React.FC = () => {
@@ -101,17 +101,6 @@ const Header: React.FC = () => {
     }
   };
 
-  // Set up wallet connect callback
-  useEffect(() => {
-    if (user) {
-      setOnConnect(() => handleLinkWallet);
-    } else {
-      setOnConnect(null);
-    }
-    // Clean up on unmount
-    return () => setOnConnect(null);
-  }, [user, handleLinkWallet]);
-
   return (
     <header
       className={`fixed w-full top-0 z-50 transition-all duration-300 ${
@@ -157,6 +146,9 @@ const Header: React.FC = () => {
                       setConnectingWallet(true);
                       try {
                         await connect();
+                        if (window.solana && window.solana.isConnected) {
+                          await handleLinkWallet();
+                        }
                       } finally {
                         setConnectingWallet(false);
                       }
@@ -234,6 +226,9 @@ const Header: React.FC = () => {
                       setConnectingWallet(true);
                       try {
                         await connect();
+                        if (window.solana && window.solana.isConnected) {
+                          await handleLinkWallet();
+                        }
                       } finally {
                         setConnectingWallet(false);
                       }
