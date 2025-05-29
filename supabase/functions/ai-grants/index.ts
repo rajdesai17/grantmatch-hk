@@ -4,15 +4,6 @@
 import { serve } from 'https://deno.land/std@0.181.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-// All environment variables are loaded from the root .env file
-function corsHeaders() {
-  return {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization, apikey, x-client-info",
-    "Content-Type": "application/json",
-  };
-}
 
 const supabaseUrl = Deno.env.get('VITE_SUPABASE_URL')!;
 const serviceRoleKey = Deno.env.get('SERVICE_ROLE_KEY')!;

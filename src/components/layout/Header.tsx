@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Menu, X, LogOut } from 'lucide-react';
 import { useNavigate, useLocation } from '../utils/router';
 import { AuthModal } from '../auth/AuthModal';
 import { supabase } from '../../lib/supabase';
 import { useWallet } from '../../lib/useWallet';
 import { User } from '@supabase/supabase-js';
-import { PublicKey } from '@solana/web3.js';
 
 const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -15,7 +14,7 @@ const Header: React.FC = () => {
   const [walletError, setWalletError] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const { publicKey, connected, connect, disconnect, setOnConnect } = useWallet();
+  const { publicKey, connected, connect, disconnect } = useWallet();
   const [connectingWallet, setConnectingWallet] = useState(false);
 
   useEffect(() => {
@@ -64,33 +63,18 @@ const Header: React.FC = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  // Helper type guard
-  function isPublicKey(obj: unknown): obj is PublicKey {
-    return !!obj && typeof obj === 'object' && typeof (obj as PublicKey).toBase58 === 'function';
-  }
-
   // Handler for linking wallet to logged-in user
-  const handleLinkWallet = useCallback(async (walletPublicKey?: PublicKey | string | number) => {
+  const handleLinkWallet = async () => {
     setWalletError(null);
-    let walletAddress: string | undefined;
-    if (!walletPublicKey) {
-      // Use mock wallet address for MVP
-      walletAddress = 'MockWalletAddress1234567890';
-    } else if (isPublicKey(walletPublicKey)) {
-      walletAddress = walletPublicKey.toBase58();
-    } else if (typeof walletPublicKey === 'string' || typeof walletPublicKey === 'number') {
-      walletAddress = String(walletPublicKey);
-    }
-
-    // Use mock user if not present
-    const userId = user?.id || 'mock-user-id-123';
-
-    // Never set "Wallet or user not found" error
-    // Proceed with mock data if needed
-
+    console.log('handleLinkWallet:', { user, publicKey }); // Debug log
     try {
+      const walletAddress = publicKey?.toBase58();
+      if (!walletAddress || !user?.id) {
+        setWalletError('Wallet or user not found.');
+        return;
+      }
       const { error } = await supabase.functions.invoke('link-wallet', {
-        body: { wallet_address: walletAddress, user_id: userId },
+        body: { wallet_address: walletAddress, user_id: user.id },
         headers: {
           apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
         },
@@ -107,13 +91,12 @@ const Header: React.FC = () => {
       const { error: updateError } = await supabase
         .from('profiles')
         .update({ wallet_address: walletAddress })
-        .eq('user_id', userId);
+        .eq('user_id', user.id);
       if (updateError) {
         setWalletError(updateError.message || 'Failed to update wallet address in profile.');
         return;
       }
       setWalletError(null); // Clear any previous error
-      console.log('Wallet successfully linked to profile:', walletAddress);
     } catch (err) {
       if (err instanceof Error) {
         setWalletError(err.message || 'Failed to link wallet.');
@@ -121,18 +104,7 @@ const Header: React.FC = () => {
         setWalletError('Failed to link wallet.');
       }
     }
-  }, [user]);
-
-  // Set up the wallet connect callback when user is available
-  useEffect(() => {
-    if (user) {
-      // Set the callback to automatically link wallet when connected
-      setOnConnect(handleLinkWallet);
-    } else {
-      // Clear the callback when no user is logged in
-      setOnConnect(null);
-    }
-  }, [user, setOnConnect, handleLinkWallet]);
+  };
 
   return (
     <header
@@ -179,6 +151,7 @@ const Header: React.FC = () => {
                       setConnectingWallet(true);
                       try {
                         await connect();
+                        await handleLinkWallet();
                       } finally {
                         setConnectingWallet(false);
                       }
@@ -256,6 +229,7 @@ const Header: React.FC = () => {
                       setConnectingWallet(true);
                       try {
                         await connect();
+                        await handleLinkWallet();
                       } finally {
                         setConnectingWallet(false);
                       }
