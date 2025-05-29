@@ -66,6 +66,9 @@ const Header: React.FC = () => {
       }
       const { error } = await supabase.functions.invoke('link-wallet', {
         body: { wallet_address: walletAddress, user_id: user.id },
+        headers: {
+          apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+        },
       });
       if (error) {
         if (error.message?.includes('already linked')) {
