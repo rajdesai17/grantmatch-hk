@@ -14,7 +14,8 @@ const Header: React.FC = () => {
   const [walletError, setWalletError] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const { publicKey, connected, disconnect } = useWallet();
+  const { publicKey, connected, connect, disconnect } = useWallet();
+  const [connectingWallet, setConnectingWallet] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,6 +59,7 @@ const Header: React.FC = () => {
   // Handler for linking wallet to logged-in user
   const handleLinkWallet = async () => {
     setWalletError(null);
+    console.log('handleLinkWallet:', { user, publicKey }); // Debug log
     try {
       const walletAddress = publicKey?.toBase58();
       if (!walletAddress || !user?.id) {
@@ -137,7 +139,21 @@ const Header: React.FC = () => {
                     <button onClick={disconnect} className="btn-secondary">Disconnect Wallet</button>
                   </div>
                 ) : (
-                  <button onClick={handleLinkWallet} className="btn-secondary">Connect Wallet</button>
+                  <button
+                    onClick={async () => {
+                      setConnectingWallet(true);
+                      try {
+                        await connect();
+                        await handleLinkWallet();
+                      } finally {
+                        setConnectingWallet(false);
+                      }
+                    }}
+                    className="btn-secondary"
+                    disabled={connectingWallet}
+                  >
+                    {connectingWallet ? 'Connecting...' : 'Connect Wallet'}
+                  </button>
                 )}
                 <button 
                   onClick={handleSignOut}
@@ -201,7 +217,21 @@ const Header: React.FC = () => {
                     <button onClick={disconnect} className="btn-secondary w-full">Disconnect Wallet</button>
                   </div>
                 ) : (
-                  <button onClick={handleLinkWallet} className="btn-secondary w-full mb-2">Connect Wallet</button>
+                  <button
+                    onClick={async () => {
+                      setConnectingWallet(true);
+                      try {
+                        await connect();
+                        await handleLinkWallet();
+                      } finally {
+                        setConnectingWallet(false);
+                      }
+                    }}
+                    className="btn-secondary w-full mb-2"
+                    disabled={connectingWallet}
+                  >
+                    {connectingWallet ? 'Connecting...' : 'Connect Wallet'}
+                  </button>
                 )}
                 <button 
                   onClick={handleSignOut}
