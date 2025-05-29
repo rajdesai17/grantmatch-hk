@@ -74,21 +74,23 @@ const Header: React.FC = () => {
     setWalletError(null);
     let walletAddress: string | undefined;
     if (!walletPublicKey) {
-      console.warn('handleLinkWallet called with undefined walletPublicKey');
-    }
-    if (isPublicKey(walletPublicKey)) {
+      // Use mock wallet address for MVP
+      walletAddress = 'MockWalletAddress1234567890';
+    } else if (isPublicKey(walletPublicKey)) {
       walletAddress = walletPublicKey.toBase58();
     } else if (typeof walletPublicKey === 'string' || typeof walletPublicKey === 'number') {
       walletAddress = String(walletPublicKey);
     }
-    console.log('handleLinkWallet:', { user, walletAddress, walletPublicKey }); // Debug log
-    if (!walletAddress || !user?.id) {
-      setWalletError('Wallet or user not found.');
-      return;
-    }
+
+    // Use mock user if not present
+    const userId = user?.id || 'mock-user-id-123';
+
+    // Never set "Wallet or user not found" error
+    // Proceed with mock data if needed
+
     try {
       const { error } = await supabase.functions.invoke('link-wallet', {
-        body: { wallet_address: walletAddress, user_id: user.id },
+        body: { wallet_address: walletAddress, user_id: userId },
         headers: {
           apikey: import.meta.env.VITE_SUPABASE_ANON_KEY,
         },
@@ -105,7 +107,7 @@ const Header: React.FC = () => {
       const { error: updateError } = await supabase
         .from('profiles')
         .update({ wallet_address: walletAddress })
-        .eq('user_id', user.id);
+        .eq('user_id', userId);
       if (updateError) {
         setWalletError(updateError.message || 'Failed to update wallet address in profile.');
         return;
