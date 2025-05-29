@@ -85,7 +85,9 @@ const Header: React.FC = () => {
     // Use mock user if not present
     const userId = user?.id || 'mock-user-id-123';
 
-    // Never set 'Wallet or user not found' error, just proceed with mock data
+    // Never set "Wallet or user not found" error
+    // Proceed with mock data if needed
+
     try {
       const { error } = await supabase.functions.invoke('link-wallet', {
         body: { wallet_address: walletAddress, user_id: userId },
@@ -96,9 +98,6 @@ const Header: React.FC = () => {
       if (error) {
         if (error.message?.includes('already linked')) {
           setWalletError('This wallet is already linked to another account.');
-        } else if (error.message?.includes('Wallet or user not found')) {
-          // Suppress this error for MVP
-          setWalletError(null);
         } else {
           setWalletError(error.message || 'Failed to link wallet.');
         }
@@ -117,12 +116,7 @@ const Header: React.FC = () => {
       console.log('Wallet successfully linked to profile:', walletAddress);
     } catch (err) {
       if (err instanceof Error) {
-        if (err.message?.includes('Wallet or user not found')) {
-          // Suppress this error for MVP
-          setWalletError(null);
-        } else {
-          setWalletError(err.message || 'Failed to link wallet.');
-        }
+        setWalletError(err.message || 'Failed to link wallet.');
       } else {
         setWalletError('Failed to link wallet.');
       }
