@@ -3,7 +3,7 @@ import { Menu, X, LogOut } from 'lucide-react';
 import { useNavigate, useLocation } from '../utils/router';
 import { AuthModal } from '../auth/AuthModal';
 import { supabase } from '../../lib/supabase';
-import { useWallet } from '../../lib/useWallet';
+import { useWallet, setOnConnect } from '../../lib/useWallet';
 import { User } from '@supabase/supabase-js';
 
 const Header: React.FC = () => {
@@ -64,7 +64,7 @@ const Header: React.FC = () => {
     try {
       const walletAddress = publicKey?.toBase58();
       if (!walletAddress || !user?.id) {
-        setWalletError('Wallet or user not found.');
+        setWalletError('Wallet or user not found. Please sign in and connect your wallet.');
         return;
       }
       const { error } = await supabase.functions.invoke('link-wallet', {
@@ -91,6 +91,7 @@ const Header: React.FC = () => {
         return;
       }
       setWalletError(null); // Clear any previous error
+      console.log('Wallet successfully linked to profile:', walletAddress);
     } catch (err) {
       if (err instanceof Error) {
         setWalletError(err.message || 'Failed to link wallet.');
@@ -99,6 +100,17 @@ const Header: React.FC = () => {
       }
     }
   };
+
+  // Set up wallet connect callback
+  useEffect(() => {
+    if (user) {
+      setOnConnect(() => handleLinkWallet);
+    } else {
+      setOnConnect(null);
+    }
+    // Clean up on unmount
+    return () => setOnConnect(null);
+  }, [user, handleLinkWallet]);
 
   return (
     <header
@@ -145,7 +157,6 @@ const Header: React.FC = () => {
                       setConnectingWallet(true);
                       try {
                         await connect();
-                        await handleLinkWallet();
                       } finally {
                         setConnectingWallet(false);
                       }
@@ -223,7 +234,6 @@ const Header: React.FC = () => {
                       setConnectingWallet(true);
                       try {
                         await connect();
-                        await handleLinkWallet();
                       } finally {
                         setConnectingWallet(false);
                       }

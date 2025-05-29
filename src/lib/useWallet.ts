@@ -7,6 +7,12 @@ declare global {
   }
 }
 
+let onConnectCallback: ((publicKey: PublicKey) => void) | null = null;
+
+export function setOnConnect(cb: ((publicKey: PublicKey) => void) | null) {
+  onConnectCallback = cb;
+}
+
 export function useWallet() {
   const [publicKey, setPublicKey] = useState<PublicKey | null>(null);
   const [connected, setConnected] = useState(false);
@@ -20,12 +26,14 @@ export function useWallet() {
           if (res.publicKey) {
             setPublicKey(new PublicKey(res.publicKey.toString()));
             setConnected(true);
+            if (onConnectCallback) onConnectCallback(new PublicKey(res.publicKey.toString()));
           }
         })
         .catch(() => {});
       window.solana.on('connect', () => {
         setPublicKey(new PublicKey(window.solana.publicKey.toString()));
         setConnected(true);
+        if (onConnectCallback) onConnectCallback(new PublicKey(window.solana.publicKey.toString()));
       });
       window.solana.on('disconnect', () => {
         setPublicKey(null);
