@@ -73,12 +73,15 @@ const Header: React.FC = () => {
   const handleLinkWallet = useCallback(async (walletPublicKey?: PublicKey | string | number) => {
     setWalletError(null);
     let walletAddress: string | undefined;
+    if (!walletPublicKey) {
+      console.warn('handleLinkWallet called with undefined walletPublicKey');
+    }
     if (isPublicKey(walletPublicKey)) {
       walletAddress = walletPublicKey.toBase58();
     } else if (typeof walletPublicKey === 'string' || typeof walletPublicKey === 'number') {
       walletAddress = String(walletPublicKey);
     }
-    console.log('handleLinkWallet:', { user, walletAddress }); // Debug log
+    console.log('handleLinkWallet:', { user, walletAddress, walletPublicKey }); // Debug log
     if (!walletAddress || !user?.id) {
       setWalletError('Wallet or user not found.');
       return;

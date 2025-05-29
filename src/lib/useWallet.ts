@@ -121,7 +121,7 @@ export function useWallet() {
     if (typeof callback === 'function' || callback === null) {
       setOnConnectCallback(callback);
     } else {
-      console.warn('setOnConnect called with non-function:', callback);
+      console.error('setOnConnect called with non-function (likely a Promise):', callback);
       setOnConnectCallback(null);
     }
   }, []);
