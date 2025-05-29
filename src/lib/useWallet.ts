@@ -106,6 +106,13 @@ export function useWallet() {
       await window.solana.disconnect();
       setPublicKey(null);
       setConnected(false);
+      // Clear Phantom wallet connection state from storage to force popup on next connect
+      try {
+        localStorage.removeItem('phantom:connected');
+        sessionStorage.removeItem('phantom:connected');
+      } catch {
+        // Ignore storage errors
+      }
     }
   }, []);
 
@@ -120,4 +127,4 @@ export function useWallet() {
   }, []);
 
   return { publicKey, connected, connect, disconnect, phantomAvailable, setOnConnect };
-} 
+}
