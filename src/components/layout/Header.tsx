@@ -64,11 +64,20 @@ const Header: React.FC = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
+  // Helper type guard
+  function isPublicKey(obj: unknown): obj is PublicKey {
+    return !!obj && typeof obj === 'object' && typeof (obj as PublicKey).toBase58 === 'function';
+  }
+
   // Handler for linking wallet to logged-in user
-  const handleLinkWallet = useCallback(async (walletPublicKey?: PublicKey) => {
+  const handleLinkWallet = useCallback(async (walletPublicKey?: PublicKey | string | number) => {
     setWalletError(null);
-    // Only use the walletPublicKey argument from the callback
-    const walletAddress = walletPublicKey?.toBase58();
+    let walletAddress: string | undefined;
+    if (isPublicKey(walletPublicKey)) {
+      walletAddress = walletPublicKey.toBase58();
+    } else if (typeof walletPublicKey === 'string' || typeof walletPublicKey === 'number') {
+      walletAddress = String(walletPublicKey);
+    }
     console.log('handleLinkWallet:', { user, walletAddress }); // Debug log
     if (!walletAddress || !user?.id) {
       setWalletError('Wallet or user not found.');
