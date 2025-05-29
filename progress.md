@@ -25,6 +25,7 @@
   - Integrated Connect Wallet/Disconnect Wallet button in Header (desktop and mobile).
   - Display connected wallet address in header.
   - Added warning banner in App.tsx if Phantom is not detected.
+- Modified signout logic in Header.tsx to disconnect the wallet on user signout, ensuring wallet is only linked to the current user session.
 
 ## Documentation & Rules
 - Detailed build guide in follow.txt

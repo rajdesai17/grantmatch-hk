@@ -43,6 +43,7 @@ const Header: React.FC = () => {
   }, []);
 
   const handleSignOut = async () => {
+    await disconnect(); // Disconnect wallet on sign out
     await supabase.auth.signOut();
     navigate('/');
   };
