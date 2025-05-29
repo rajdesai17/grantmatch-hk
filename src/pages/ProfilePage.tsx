@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Award, FileText, Mail, Briefcase, ArrowUpRight } from 'lucide-react';
 import { supabase, mintNft, uploadNftMetadata } from '../lib/supabase';
 import { useNavigate } from '../components/utils/router';
+import { useWallet } from '../lib/useWallet';
 
 interface Profile {
   name: string;
@@ -35,6 +36,9 @@ const ProfilePage: React.FC = () => {
   const [minting, setMinting] = useState(false);
   const [mintError, setMintError] = useState<string | null>(null);
   const [mintSuccess, setMintSuccess] = useState<{ mint: string; signature: string } | null>(null);
+  const { publicKey, connect, phantomAvailable } = useWallet();
+  const [walletLoading, setWalletLoading] = useState(false);
+  const [walletError, setWalletError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -182,6 +186,42 @@ const ProfilePage: React.FC = () => {
     }
   };
 
+  const handleConnectWallet = async () => {
+    setWalletError(null);
+    setWalletLoading(true);
+    try {
+      if (!phantomAvailable) {
+        window.open('https://phantom.app/', '_blank');
+        setWalletLoading(false);
+        return;
+      }
+      await connect();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not found');
+      const walletAddress = publicKey?.toBase58();
+      if (!walletAddress) throw new Error('Wallet not found');
+      // Link wallet via edge function
+      const { error } = await supabase.functions.invoke('link-wallet', {
+        body: { wallet_address: walletAddress, user_id: user.id },
+        headers: { apikey: import.meta.env.VITE_SUPABASE_ANON_KEY },
+      });
+      if (error) throw new Error(error.message || 'Failed to link wallet');
+      // Update wallet_address in profiles table
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ wallet_address: walletAddress })
+        .eq('user_id', user.id);
+      if (updateError) throw new Error(updateError.message || 'Failed to update wallet address in profile');
+      setWalletError(null);
+      // Refetch profile to update UI
+      window.location.reload();
+    } catch (err) {
+      setWalletError(err instanceof Error ? err.message : 'Failed to connect wallet');
+    } finally {
+      setWalletLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="pt-24 pb-16 px-4">
@@ -253,10 +293,12 @@ const ProfilePage: React.FC = () => {
                     View Wallet
                   </button>
                 ) : (
-                  <button className="btn-secondary">
-                    <Briefcase size={18} />
-                    Connect Wallet
-                  </button>
+                  <>
+                    <button className="btn-secondary" onClick={handleConnectWallet} disabled={walletLoading}>
+                      {walletLoading ? 'Connecting...' : 'Connect Wallet'}
+                    </button>
+                    {walletError && <div className="text-red-500 mt-2">{walletError}</div>}
+                  </>
                 )}
               </div>
             </div>
