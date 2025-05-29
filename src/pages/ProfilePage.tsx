@@ -200,13 +200,7 @@ const ProfilePage: React.FC = () => {
       if (!user) throw new Error('User not found');
       const walletAddress = publicKey?.toBase58();
       if (!walletAddress) throw new Error('Wallet not found');
-      // Link wallet via edge function
-      const { error } = await supabase.functions.invoke('link-wallet', {
-        body: { wallet_address: walletAddress, user_id: user.id },
-        headers: { apikey: import.meta.env.VITE_SUPABASE_ANON_KEY },
-      });
-      if (error) throw new Error(error.message || 'Failed to link wallet');
-      // Update wallet_address in profiles table
+      // Directly update wallet_address in profiles table
       const { error: updateError } = await supabase
         .from('profiles')
         .update({ wallet_address: walletAddress })
@@ -214,7 +208,7 @@ const ProfilePage: React.FC = () => {
       if (updateError) throw new Error(updateError.message || 'Failed to update wallet address in profile');
       setWalletError(null);
       // Refetch profile to update UI
-      window.location.reload();
+      setProfile((prev) => prev ? { ...prev, wallet_address: walletAddress } : prev);
     } catch (err) {
       setWalletError(err instanceof Error ? err.message : 'Failed to connect wallet');
     } finally {
