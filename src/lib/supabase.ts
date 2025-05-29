@@ -22,7 +22,8 @@ export async function mintNft({ recipient_wallet, metadata_uri, name = 'GrantMat
 // Utility to upload NFT metadata JSON to Supabase Storage and return public URL
 export async function uploadNftMetadata(userId: string, metadata: object): Promise<string> {
   const fileName = `nft-metadata-${userId}.json`;
-  const { data, error } = await supabase.storage.from('nft-metadata').upload(fileName, JSON.stringify(metadata), {
+  const file = new Blob([JSON.stringify(metadata)], { type: 'application/json' });
+  const { error } = await supabase.storage.from('nft-metadata').upload(fileName, file, {
     contentType: 'application/json',
     upsert: true,
   });

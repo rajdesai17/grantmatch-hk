@@ -72,12 +72,35 @@ serve(async (req) => {
       return keywords.some((kw: string) => text.includes(kw));
     });
 
-    // 4. Return top 5 matches
+    // 4. Build detailed, personalized reasons for each match
+    function buildReason(grant: any, userQuery: string, matchedKeywords: string[]) {
+      // Find which keywords matched this grant
+      const text = `${grant.title} ${grant.description} ${(grant.tags || []).join(' ')}`.toLowerCase();
+      const grantMatched = matchedKeywords.filter(kw => text.includes(kw));
+      let reason = `This grant matches your project because it supports initiatives related to: ${grantMatched.join(', ')}.`;
+      if (grant.description) {
+        reason += ` ${grant.description.length > 120 ? grant.description.slice(0, 120) + '...' : grant.description}`;
+      }
+      reason += ' If your project aligns with these focus areas, you have a strong chance of being considered.';
+      return reason;
+    }
+
+    const detailedMatches = matches.slice(0, 5).map((g: any) => {
+      return {
+        title: g.title,
+        organization: g.organization,
+        reason: buildReason(g, query, keywords),
+        id: g.id,
+        url: g.url || null
+      };
+    });
+
+    // 5. Return detailed matches
     return new Response(JSON.stringify({
-      message: matches.length > 0
-        ? `Top matching grants:\n${matches.slice(0, 5).map((g: any) => `- ${g.title} (${g.organization})`).join('\n')}`
+      message: detailedMatches.length > 0
+        ? `Top matching grants with reasons:\n${detailedMatches.map((g: any, i: number) => `- ${g.title} (${g.organization}): ${g.reason}`).join('\n\n')}`
         : 'No relevant grants found.',
-      grants: matches.slice(0, 5)
+      grants: detailedMatches
     }), {
       headers: corsHeaders(),
     });

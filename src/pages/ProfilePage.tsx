@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Award, FileText, Mail, Briefcase, ArrowUpRight } from 'lucide-react';
-import { supabase, mintNft, uploadNftMetadata } from '../lib/supabase';
+import { Award, Mail, Briefcase, ArrowUpRight } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 import { useNavigate } from '../components/utils/router';
 import { useWallet } from '../lib/useWallet';
 
@@ -26,7 +26,6 @@ const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [votes, setVotes] = useState<unknown[]>([]);
   const [nfts, setNfts] = useState<unknown[]>([]);
   const [appliedGrants, setAppliedGrants] = useState<unknown[]>([]);
   const [proposalVotes, setProposalVotes] = useState<ProposalVoteSummary[]>([]);
@@ -58,18 +57,12 @@ const ProfilePage: React.FC = () => {
 
         if (profileError) throw profileError;
 
-        const { data: votesData } = await supabase
-          .from('votes')
-          .select('*')
-          .eq(profileData.role === 'founder' ? 'founder_id' : 'voter_id', user.id);
-
         const { data: nftsData } = await supabase
           .from('nfts')
           .select('*')
           .eq('user_id', user.id);
 
         setProfile(profileData);
-        setVotes(votesData || []);
         setNfts(nftsData || []);
 
         // Fetch applied grants for founders
@@ -130,51 +123,33 @@ const ProfilePage: React.FC = () => {
         setMinting(false);
         return;
       }
-      // 1. Enforce one NFT per user
+      // 1. Enforce one NFT per user (in-memory only)
       if (nfts.length > 0) {
         setMintError('You already have an NFT profile.');
         setMinting(false);
         return;
       }
-      // 2. Generate metadata from profile
+      // 2. Use static metadata for mock NFT
       const metadata = {
-        name: profile.name,
+        name: 'GrantMatch Demo NFT',
         symbol: 'GMNFT',
-        description: 'GrantMatch Founder Profile NFT',
-        image: '', // Optionally add a profile image URL
+        description: 'This is a mock NFT for testing.',
+        image: '',
         attributes: [
-          { trait_type: 'Region', value: profile.region || '' },
-          { trait_type: 'Mission', value: profile.mission || '' },
-          { trait_type: 'Female-led', value: !!profile.female_flag },
-          { trait_type: 'Applied Grants', value: profile.applied_grants_count },
-          // Add more attributes as needed
-        ],
+          { trait_type: 'Demo', value: true }
+        ]
       };
-      // 3. Upload metadata to Supabase Storage
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not found');
-      const metadata_uri = await uploadNftMetadata(user.id, metadata);
-      // 4. Mint NFT with real metadata URI
-      const data = await mintNft({
-        recipient_wallet: profile.wallet_address,
-        metadata_uri,
-        name: profile.name,
-        symbol: 'GMNFT',
-      });
-      setMintSuccess({ mint: data.mint, signature: data.signature });
-      // 5. Store NFT in nfts table
-      await supabase.from('nfts').insert({
-        user_id: user.id,
-        mint_address: data.mint,
-        metadata_uri,
+      // 3. Simulate NFT minting (no Supabase, no storage)
+      const mockMint = 'MockMint111111111111111111111111111111111111';
+      const mockSignature = 'MockSignature1111111111111111111111111111111';
+      const mockNft = {
+        id: mockMint,
+        champion_badge: false,
         created_at: new Date().toISOString(),
-      });
-      // Refresh NFT list
-      const { data: nftsData } = await supabase
-        .from('nfts')
-        .select('*')
-        .eq('user_id', profile.wallet_address);
-      setNfts(nftsData || []);
+        ...metadata
+      };
+      setMintSuccess({ mint: mockMint, signature: mockSignature });
+      setNfts([mockNft]);
     } catch (err: unknown) {
       if (err instanceof Error) {
         setMintError(err.message || 'Failed to mint NFT');
@@ -326,7 +301,9 @@ const ProfilePage: React.FC = () => {
           <div className="card-bg rounded-xl p-6 mb-8">
             <h2 className="text-xl font-semibold mb-4">My Created Proposals</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {myProposals.map((p) => {
+              {(() => {
+                const p = myProposals[0];
+                if (!p) return null;
                 const voteSummary = proposalVotes.find(v => v.title === p.title);
                 return (
                   <div key={p.id} className="card-bg rounded-xl p-4 border border-gray-800">
@@ -347,7 +324,7 @@ const ProfilePage: React.FC = () => {
                     </button>
                   </div>
                 );
-              })}
+              })()}
             </div>
             {detailsModalOpen && selectedProposal && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
@@ -380,54 +357,7 @@ const ProfilePage: React.FC = () => {
           </div>
         )}
         
-        {profile.role === 'founder' && proposalVotes.length > 0 && (
-          <div className="card-bg rounded-xl p-6 mb-8">
-            <h2 className="text-xl font-semibold mb-4">Votes Received on My Proposals</h2>
-            <ul className="list-disc list-inside ml-4">
-              {proposalVotes.map((p, idx) => (
-                <li key={idx}>
-                  <span className="font-semibold">{p.title}:</span> For: {p.for}, Against: {p.against}, Abstain: {p.abstain}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Votes Section */}
-          <div>
-            <h2 className="text-2xl font-semibold mb-6 flex items-center">
-              <FileText size={24} className="mr-2 text-accent-teal" />
-              {profile.role === 'founder' ? 'Received Votes' : 'Given Votes'}
-            </h2>
-            
-            <div className="space-y-4">
-              {votes.length > 0 ? (
-                votes.map((vote) => {
-                  const v = vote as { id: string; token_amount: number; created_at: string };
-                  return (
-                    <div key={v.id} className="card-bg rounded-xl p-5 hover:shadow-subtle transition-all duration-300">
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-medium">Vote #{v.id.slice(0, 8)}</h3>
-                        <span className="text-accent-teal">{v.token_amount} tokens</span>
-                      </div>
-                      
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-text-secondary">
-                          {new Date(v.created_at).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })
-              ) : (
-                <div className="card-bg rounded-xl p-6 text-center">
-                  <p className="text-text-secondary mb-4">No votes yet.</p>
-                </div>
-              )}
-            </div>
-          </div>
-          
           {/* NFT Achievements */}
           <div>
             <h2 className="text-2xl font-semibold mb-6 flex items-center">

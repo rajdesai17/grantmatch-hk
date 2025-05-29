@@ -27,6 +27,7 @@
   - Added warning banner in App.tsx if Phantom is not detected.
 - Modified signout logic in Header.tsx to disconnect the wallet on user signout, ensuring wallet is only linked to the current user session.
 - Improved wallet connect flow: now links wallet to user profile only after Phantom is actually connected, using callback mechanism. Prevents 'wallet or user not found' error.
+- Enhanced ai-grants Edge Function: Discovery chat now returns detailed, personalized reasons for each matching grant, explaining why the user should apply based on their project description and matched keywords.
 
 ## Documentation & Rules
 - Detailed build guide in follow.txt
