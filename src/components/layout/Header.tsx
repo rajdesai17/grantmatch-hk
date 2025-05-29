@@ -67,14 +67,14 @@ const Header: React.FC = () => {
   // Handler for linking wallet to logged-in user
   const handleLinkWallet = useCallback(async (walletPublicKey?: PublicKey) => {
     setWalletError(null);
-    const keyToUse = walletPublicKey || publicKey;
-    console.log('handleLinkWallet:', { user, publicKey: keyToUse }); // Debug log
+    // Only use the walletPublicKey argument from the callback
+    const walletAddress = walletPublicKey?.toBase58();
+    console.log('handleLinkWallet:', { user, walletAddress }); // Debug log
+    if (!walletAddress || !user?.id) {
+      setWalletError('Wallet or user not found.');
+      return;
+    }
     try {
-      const walletAddress = keyToUse?.toBase58();
-      if (!walletAddress || !user?.id) {
-        setWalletError('Wallet or user not found.');
-        return;
-      }
       const { error } = await supabase.functions.invoke('link-wallet', {
         body: { wallet_address: walletAddress, user_id: user.id },
         headers: {
@@ -107,7 +107,7 @@ const Header: React.FC = () => {
         setWalletError('Failed to link wallet.');
       }
     }
-  }, [publicKey, user]);
+  }, [user]);
 
   // Set up the wallet connect callback when user is available
   useEffect(() => {

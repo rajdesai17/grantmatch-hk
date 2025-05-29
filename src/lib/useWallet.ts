@@ -18,7 +18,9 @@ export function useWallet() {
   const [publicKey, setPublicKey] = useState<PublicKey | null>(null);
   const [connected, setConnected] = useState(false);
   const [phantomAvailable, setPhantomAvailable] = useState(false);
-  const [onConnectCallback, setOnConnectCallback] = useState<((publicKey: PublicKey) => Promise<void>) | null>(null);  useEffect(() => {
+  const [onConnectCallback, setOnConnectCallback] = useState<((publicKey: PublicKey) => Promise<void>) | null>(null);
+
+  useEffect(() => {
     if (window.solana && window.solana.isPhantom) {
       setPhantomAvailable(true);
       
@@ -65,7 +67,9 @@ export function useWallet() {
         window.solana.removeAllListeners('disconnect');
       }
     };
-  }, [onConnectCallback]);const connect = useCallback(async () => {
+  }, [onConnectCallback]);
+
+  const connect = useCallback(async () => {
     if (!window.solana) {
       window.open('https://phantom.app/', '_blank');
       return null;
@@ -92,6 +96,7 @@ export function useWallet() {
       return null;
     }
   }, [onConnectCallback]);
+
   const disconnect = useCallback(async () => {
     if (window.solana) {
       await window.solana.disconnect();
