@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Menu, X, LogOut } from 'lucide-react';
 import { useNavigate, useLocation } from '../utils/router';
 import { AuthModal } from '../auth/AuthModal';
 import { supabase } from '../../lib/supabase';
 import { useWallet } from '../../lib/useWallet';
 import { User } from '@supabase/supabase-js';
+import { PublicKey } from '@solana/web3.js';
 
 const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -14,7 +15,7 @@ const Header: React.FC = () => {
   const [walletError, setWalletError] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const { publicKey, connected, connect, disconnect } = useWallet();
+  const { publicKey, connected, connect, disconnect, setOnConnect } = useWallet();
   const [connectingWallet, setConnectingWallet] = useState(false);
 
   useEffect(() => {
@@ -64,11 +65,12 @@ const Header: React.FC = () => {
   const isActive = (path: string) => location.pathname === path;
 
   // Handler for linking wallet to logged-in user
-  const handleLinkWallet = async () => {
+  const handleLinkWallet = useCallback(async (walletPublicKey?: PublicKey) => {
     setWalletError(null);
-    console.log('handleLinkWallet:', { user, publicKey }); // Debug log
+    const keyToUse = walletPublicKey || publicKey;
+    console.log('handleLinkWallet:', { user, publicKey: keyToUse }); // Debug log
     try {
-      const walletAddress = publicKey?.toBase58();
+      const walletAddress = keyToUse?.toBase58();
       if (!walletAddress || !user?.id) {
         setWalletError('Wallet or user not found.');
         return;
@@ -97,6 +99,7 @@ const Header: React.FC = () => {
         return;
       }
       setWalletError(null); // Clear any previous error
+      console.log('Wallet successfully linked to profile:', walletAddress);
     } catch (err) {
       if (err instanceof Error) {
         setWalletError(err.message || 'Failed to link wallet.');
@@ -104,7 +107,18 @@ const Header: React.FC = () => {
         setWalletError('Failed to link wallet.');
       }
     }
-  };
+  }, [publicKey, user]);
+
+  // Set up the wallet connect callback when user is available
+  useEffect(() => {
+    if (user) {
+      // Set the callback to automatically link wallet when connected
+      setOnConnect(handleLinkWallet);
+    } else {
+      // Clear the callback when no user is logged in
+      setOnConnect(null);
+    }
+  }, [user, setOnConnect, handleLinkWallet]);
 
   return (
     <header
@@ -151,7 +165,6 @@ const Header: React.FC = () => {
                       setConnectingWallet(true);
                       try {
                         await connect();
-                        await handleLinkWallet();
                       } finally {
                         setConnectingWallet(false);
                       }
@@ -229,7 +242,6 @@ const Header: React.FC = () => {
                       setConnectingWallet(true);
                       try {
                         await connect();
-                        await handleLinkWallet();
                       } finally {
                         setConnectingWallet(false);
                       }
