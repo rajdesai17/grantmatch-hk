@@ -10,6 +10,30 @@ serve(async (req) => {
       return new Response(JSON.stringify({ error: 'Missing recipient_wallet or metadata_uri' }), { status: 400 });
     }
 
+    // MOCK MODE: If MOCK_NFT_MINTING env variable is set, return a mock NFT mint result
+    const mockMode = Deno.env.get('MOCK_NFT_MINTING') === 'true';
+    if (mockMode) {
+      // Simulate a fake mint address and associated token account
+      const fakeMint = 'MockMint111111111111111111111111111111111111';
+      const fakeAta = 'MockATA1111111111111111111111111111111111111';
+      const fakeSignature = 'MockSignature1111111111111111111111111111111';
+      return new Response(
+        JSON.stringify({
+          mint: fakeMint,
+          ata: fakeAta,
+          signature: fakeSignature,
+          mock: true,
+          metadata: {
+            name,
+            symbol,
+            uri: metadata_uri,
+            recipient_wallet
+          }
+        }),
+        { status: 200 }
+      );
+    }
+
     // Load keypair from env
     const secret = Deno.env.get('SOLANA_KEYPAIR_JSON');
     if (!secret) throw new Error('SOLANA_KEYPAIR_JSON env variable not set');
