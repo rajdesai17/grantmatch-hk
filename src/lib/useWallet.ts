@@ -44,13 +44,15 @@ export function useWallet() {
           setPublicKey(newPublicKey);
           setConnected(true);
           
-          // Call the onConnect callback if it exists
-          if (onConnectCallback) {
+          // Defensive: Only call if onConnectCallback is a function
+          if (typeof onConnectCallback === 'function') {
             try {
               await onConnectCallback(newPublicKey);
             } catch (error) {
               console.error('Error in wallet connect callback:', error);
             }
+          } else {
+            console.warn('onConnectCallback is not a function:', onConnectCallback);
           }
         }
       });
@@ -80,13 +82,15 @@ export function useWallet() {
       setPublicKey(newPublicKey);
       setConnected(true);
       
-      // Call the onConnect callback if it exists
-      if (onConnectCallback) {
+      // Defensive: Only call if onConnectCallback is a function
+      if (typeof onConnectCallback === 'function') {
         try {
           await onConnectCallback(newPublicKey);
         } catch (error) {
           console.error('Error in wallet connect callback:', error);
         }
+      } else {
+        console.warn('onConnectCallback is not a function:', onConnectCallback);
       }
       
       return newPublicKey;
@@ -106,7 +110,13 @@ export function useWallet() {
   }, []);
 
   const setOnConnect = useCallback((callback: ((publicKey: PublicKey) => Promise<void>) | null) => {
-    setOnConnectCallback(callback);
+    // Defensive: Only set if callback is a function or null
+    if (typeof callback === 'function' || callback === null) {
+      setOnConnectCallback(callback);
+    } else {
+      console.warn('setOnConnect called with non-function:', callback);
+      setOnConnectCallback(null);
+    }
   }, []);
 
   return { publicKey, connected, connect, disconnect, phantomAvailable, setOnConnect };
