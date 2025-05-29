@@ -1,27 +1,81 @@
-import React from 'react';
-import { ThumbsUp, ThumbsDown, Clock, Check, User, FileText } from 'lucide-react';
-import proposalsData from '../data/proposals.json';
+import React, { useEffect, useState } from 'react';
+import { ThumbsUp, ThumbsDown, Clock, Check, User, FileText, X } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 interface ProposalProps {
-  id: number;
+  id: string;
   title: string;
   description: string;
-  proposer: string;
-  votes: {
+  proposer_id?: string;
+  grant_id?: number;
+  status: string;
+  end_date?: string;
+  created_at?: string;
+  // For static proposals compatibility
+  proposer?: string;
+  votes?: {
     for: number;
     against: number;
     abstain: number;
   };
-  status: string;
-  endDate: string;
+  profiles?: {
+    name: string;
+  };
 }
 
-const ProposalCard: React.FC<{ proposal: ProposalProps }> = ({ proposal }) => {
-  const totalVotes = proposal.votes.for + proposal.votes.against + proposal.votes.abstain;
-  const forPercentage = (proposal.votes.for / totalVotes) * 100;
-  const againstPercentage = (proposal.votes.against / totalVotes) * 100;
+const ProposalCard: React.FC<{ proposal: ProposalProps; currentUserId?: string }> = ({ proposal, currentUserId }) => {
+  const [votes, setVotes] = useState({ for: 0, against: 0, abstain: 0 });
+  const [userVote, setUserVote] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [voting, setVoting] = useState(false);
+  const proposalId = proposal.id;
+
+  useEffect(() => {
+    const fetchVotes = async () => {
+      setLoading(true);
+      const { data } = await supabase
+        .from('proposal_votes')
+        .select('vote_type, voter_id')
+        .eq('proposal_id', proposalId);
+      const counts = { for: 0, against: 0, abstain: 0 };
+      let userVoted: string | null = null;
+      (data || []).forEach((v: any) => {
+        if (v.vote_type === 'for') counts.for++;
+        if (v.vote_type === 'against') counts.against++;
+        if (v.vote_type === 'abstain') counts.abstain++;
+        if (v.voter_id === currentUserId) userVoted = v.vote_type;
+      });
+      setVotes(counts);
+      setUserVote(userVoted);
+      setLoading(false);
+    };
+    fetchVotes();
+  }, [proposalId, currentUserId]);
+
+  const handleVote = async (type: 'for' | 'against' | 'abstain') => {
+    if (userVote || voting) return;
+    setVoting(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setVoting(false);
+      return;
+    }
+    await supabase.from('proposal_votes').insert({
+      proposal_id: proposalId,
+      voter_id: user.id,
+      vote_type: type,
+    });
+    setUserVote(type);
+    setVotes((prev) => ({ ...prev, [type]: prev[type] + 1 }));
+    setVoting(false);
+  };
+
+  const totalVotes = votes.for + votes.against + votes.abstain;
+  const forPercentage = totalVotes > 0 ? (votes.for / totalVotes) * 100 : 0;
+  const againstPercentage = totalVotes > 0 ? (votes.against / totalVotes) * 100 : 0;
   
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return '';
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', { 
       year: 'numeric', 
@@ -48,18 +102,18 @@ const ProposalCard: React.FC<{ proposal: ProposalProps }> = ({ proposal }) => {
         
         <div className="flex items-center gap-2 mb-6 text-sm text-text-secondary">
           <User size={16} />
-          <span>Proposed by {proposal.proposer}</span>
+          <span>Proposed by {proposal.profiles?.name || proposal.proposer || proposal.proposer_id || 'Unknown'}</span>
         </div>
         
         <div className="mb-6">
           <div className="flex justify-between mb-1">
             <div className="flex items-center">
               <ThumbsUp size={16} className="text-accent-teal mr-1" />
-              <span className="text-sm text-text-secondary">{proposal.votes.for} votes</span>
+              <span className="text-sm text-text-secondary">{votes.for} votes</span>
             </div>
             <div className="flex items-center">
               <ThumbsDown size={16} className="text-accent-warm mr-1" />
-              <span className="text-sm text-text-secondary">{proposal.votes.against} votes</span>
+              <span className="text-sm text-text-secondary">{votes.against} votes</span>
             </div>
           </div>
           
@@ -76,12 +130,12 @@ const ProposalCard: React.FC<{ proposal: ProposalProps }> = ({ proposal }) => {
             {proposal.status === 'Active' ? (
               <>
                 <Clock size={16} className="mr-1" />
-                <span>Ends {formatDate(proposal.endDate)}</span>
+                <span>Ends {formatDate(proposal.end_date)}</span>
               </>
             ) : (
               <>
                 <Check size={16} className="mr-1" />
-                <span>Ended {formatDate(proposal.endDate)}</span>
+                <span>Ended {formatDate(proposal.end_date)}</span>
               </>
             )}
           </div>
@@ -95,13 +149,13 @@ const ProposalCard: React.FC<{ proposal: ProposalProps }> = ({ proposal }) => {
       
       {proposal.status === 'Active' && (
         <div className="border-t border-gray-800 p-4 flex gap-4">
-          <button className="flex-1 py-2 bg-accent-teal bg-opacity-20 hover:bg-opacity-30 rounded-md text-accent-teal transition-colors">
+          <button className="flex-1 py-2 bg-accent-teal bg-opacity-20 hover:bg-opacity-30 rounded-md text-accent-teal transition-colors" onClick={() => handleVote('for')}>
             Vote For
           </button>
-          <button className="flex-1 py-2 bg-accent-warm bg-opacity-20 hover:bg-opacity-30 rounded-md text-accent-warm transition-colors">
+          <button className="flex-1 py-2 bg-accent-warm bg-opacity-20 hover:bg-opacity-30 rounded-md text-accent-warm transition-colors" onClick={() => handleVote('against')}>
             Vote Against
           </button>
-          <button className="flex-1 py-2 bg-gray-700 bg-opacity-20 hover:bg-opacity-30 rounded-md text-gray-400 transition-colors">
+          <button className="flex-1 py-2 bg-gray-700 bg-opacity-20 hover:bg-opacity-30 rounded-md text-gray-400 transition-colors" onClick={() => handleVote('abstain')}>
             Abstain
           </button>
         </div>
@@ -111,8 +165,95 @@ const ProposalCard: React.FC<{ proposal: ProposalProps }> = ({ proposal }) => {
 };
 
 const DaoPage: React.FC = () => {
-  const activeProposals = proposalsData.filter(p => p.status === 'Active');
-  const passedProposals = proposalsData.filter(p => p.status === 'Passed');
+  const [profile, setProfile] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [form, setForm] = useState({ title: '', description: '', grantId: '' });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitMsg, setSubmitMsg] = useState<string | null>(null);
+  const [proposals, setProposals] = useState<any[]>([]);
+  const [proposalsLoading, setProposalsLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setProfile(null);
+        setLoading(false);
+        return;
+      }
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+      setProfile(profileData);
+      setLoading(false);
+    };
+    fetchProfile();
+
+    // Fetch proposals from Supabase
+    const fetchProposals = async () => {
+      setProposalsLoading(true);
+      const { data } = await supabase
+        .from('proposals')
+        .select('*, profiles:proposer_id(name)')
+        .order('created_at', { ascending: false });
+      setProposals(data || []);
+      setProposalsLoading(false);
+    };
+    fetchProposals();
+
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setCurrentUserId(user?.id || null);
+    });
+  }, []);
+
+  const handleOpenModal = () => {
+    setForm({ title: '', description: '', grantId: '' });
+    setSubmitMsg(null);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setSubmitMsg(null);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setSubmitMsg('Please sign in.');
+      setSubmitting(false);
+      return;
+    }
+    const { error } = await supabase.from('proposals').insert({
+      title: form.title,
+      description: form.description,
+      proposer_id: user.id,
+      grant_id: form.grantId ? Number(form.grantId) : null,
+      status: 'Active',
+      created_at: new Date().toISOString(),
+    });
+    if (error) {
+      setSubmitMsg('Error creating proposal.');
+    } else {
+      setSubmitMsg('Proposal created!');
+      setTimeout(() => {
+        setModalOpen(false);
+      }, 1000);
+    }
+  };
+
+  const activeProposals = proposals.filter((p) => p.status === 'Active');
+  const passedProposals = proposals.filter((p) => p.status === 'Passed');
 
   return (
     <div className="pt-24 pb-16 px-4">
@@ -123,25 +264,94 @@ const DaoPage: React.FC = () => {
             Participate in governance and help shape the future of GrantMatch. Vote on proposals or create your own.
           </p>
         </div>
-        
         <div className="mb-6 flex justify-between items-center">
           <h2 className="text-2xl font-semibold">Active Proposals</h2>
-          <button className="btn-secondary">
-            Create Proposal
-          </button>
+          {profile && profile.role === 'founder' && (
+            <>
+              <button className="btn-secondary" onClick={handleOpenModal}>
+                Create Proposal
+              </button>
+              {modalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+                  <div className="bg-background-dark rounded-xl shadow-lg max-w-md w-full p-8 relative">
+                    <button
+                      className="absolute top-4 right-4 text-text-secondary hover:text-white"
+                      onClick={handleCloseModal}
+                    >
+                      <X size={20} />
+                    </button>
+                    <h2 className="text-2xl font-bold mb-6">Create Proposal</h2>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium text-text-secondary mb-1">Title</label>
+                        <input
+                          type="text"
+                          name="title"
+                          value={form.title}
+                          onChange={handleChange}
+                          className="w-full bg-background-dark border border-gray-800 rounded-md px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-accent-teal"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-text-secondary mb-1">Description</label>
+                        <textarea
+                          name="description"
+                          value={form.description}
+                          onChange={handleChange}
+                          className="w-full bg-background-dark border border-gray-800 rounded-md px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-accent-teal"
+                          rows={4}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-text-secondary mb-1">Grant ID (optional)</label>
+                        <input
+                          type="number"
+                          name="grantId"
+                          value={form.grantId}
+                          onChange={handleChange}
+                          className="w-full bg-background-dark border border-gray-800 rounded-md px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-accent-teal"
+                          min={1}
+                        />
+                      </div>
+                      <button
+                        type="submit"
+                        className="w-full btn-primary py-2"
+                        disabled={submitting}
+                      >
+                        {submitting ? 'Submitting...' : 'Submit Proposal'}
+                      </button>
+                      {submitMsg && <div className="text-center mt-2 text-accent-teal">{submitMsg}</div>}
+                    </form>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </div>
-        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          {activeProposals.map(proposal => (
-            <ProposalCard key={proposal.id} proposal={proposal} />
-          ))}
+          {proposalsLoading ? (
+            <div className="col-span-2 text-center text-text-secondary py-8">Loading proposals...</div>
+          ) : activeProposals.length > 0 ? (
+            activeProposals.map(proposal => (
+              <ProposalCard key={proposal.id} proposal={proposal} currentUserId={currentUserId || undefined} />
+            ))
+          ) : (
+            <div className="col-span-2 text-center text-text-secondary py-8">No active proposals.</div>
+          )}
         </div>
-        
         <h2 className="text-2xl font-semibold mb-6">Recent Passed Proposals</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {passedProposals.map(proposal => (
-            <ProposalCard key={proposal.id} proposal={proposal} />
-          ))}
+          {proposalsLoading ? (
+            <div className="col-span-2 text-center text-text-secondary py-8">Loading proposals...</div>
+          ) : passedProposals.length > 0 ? (
+            passedProposals.map(proposal => (
+              <ProposalCard key={proposal.id} proposal={proposal} currentUserId={currentUserId || undefined} />
+            ))
+          ) : (
+            <div className="col-span-2 text-center text-text-secondary py-8">No passed proposals.</div>
+          )}
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Search, Filter } from 'lucide-react';
 import GrantCard from '../components/explore/GrantCard';
 import { supabase } from '../lib/supabase';
+import GrantDetailsModal from '../components/explore/GrantDetailsModal';
 
 interface Grant {
   id: number;
@@ -19,6 +20,8 @@ const ExplorePage: React.FC = () => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [grants, setGrants] = useState<Grant[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedGrant, setSelectedGrant] = useState<Grant | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   useEffect(() => {
     const fetchGrants = async () => {
@@ -105,7 +108,7 @@ const ExplorePage: React.FC = () => {
           <>
         <div className="grid-layout">
           {filteredGrants.map(grant => (
-            <GrantCard key={grant.id} grant={grant} />
+            <GrantCard key={grant.id} grant={grant} onViewDetails={(g) => { setSelectedGrant(g); setDetailsOpen(true); }} />
           ))}
         </div>
         {filteredGrants.length === 0 && (
@@ -114,6 +117,13 @@ const ExplorePage: React.FC = () => {
           </div>
             )}
           </>
+        )}
+        {selectedGrant && (
+          <GrantDetailsModal 
+            grant={selectedGrant} 
+            open={detailsOpen} 
+            onClose={() => setDetailsOpen(false)} 
+          />
         )}
       </div>
     </div>

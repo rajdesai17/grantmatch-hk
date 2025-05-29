@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, DollarSign, Tag } from 'lucide-react';
+import { Calendar, DollarSign } from 'lucide-react';
 
 interface GrantProps {
   id: number;
@@ -11,7 +11,7 @@ interface GrantProps {
   tags: string[];
 }
 
-const GrantCard: React.FC<{ grant: GrantProps }> = ({ grant }) => {
+const GrantCard: React.FC<{ grant: GrantProps; onViewDetails?: (grant: GrantProps) => void }> = ({ grant, onViewDetails }) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('en-US', { 
@@ -62,7 +62,7 @@ const GrantCard: React.FC<{ grant: GrantProps }> = ({ grant }) => {
       </div>
       
       <div className="border-t border-gray-800 p-4">
-        <button className="w-full btn-primary py-2">
+        <button className="w-full btn-primary py-2" onClick={() => onViewDetails?.(grant)}>
           View Details
         </button>
       </div>

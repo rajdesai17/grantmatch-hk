@@ -5,8 +5,8 @@ alwaysApply: true
 ---
 # GrantMatch Build Rules (custom.mdc)
 
-## 1. Follow the Build Guide
-- Use the step-by-step instructions in [follow.txt](mdc:follow.txt) as the primary source for project setup, development, and deployment.
+## 1. Follow the Build Guide to impliment all features step by step mentioned in [features.txt](mdc:.cursor/features.txt)
+call supabase mcp if you have confusion about database structure.
 - Do not skip any steps; each is required for a successful build and deployment.
 
 ## 2. Technology & Documentation Links

@@ -1,0 +1,54 @@
+GrantMatch On-Chain Integration Plan (NFT Minting, Solana Devnet)
+===============================================================
+
+Goal: Integrate Solana Devnet for on-chain voting, NFT minting, and token transfers. Show on-chain status in the UI.
+
+Step 1: Solana Devnet Setup
+---------------------------
+1. Install @solana/web3.js and Solana CLI if not already present.
+2. Generate a Solana Devnet keypair for the app (backend/Edge Function wallet).
+3. Fund the wallet with Devnet SOL using airdrop.
+4. Store the keypair securely (use env variable for Edge Functions).
+
+Step 2: Phantom Wallet Connect (Frontend)
+-----------------------------------------
+1. Add Phantom Wallet connect button for users (founders, funders).
+2. Store connected wallet address in user profile (Supabase).
+3. Show wallet status in header/profile.
+
+Step 3: NFT Minting (Edge Function)
+-----------------------------------
+1. Create a Supabase Edge Function (mint-nft.ts) using @solana/web3.js.
+2. On founder signup, call Edge Function to mint NFT to their wallet address.
+3. Store NFT metadata URI in Supabase (nfts table).
+4. Show NFT badge in profile (with on-chain link).
+
+Step 4: On-Chain Voting (Token Transfers)
+-----------------------------------------
+1. Create a test SPL token (TestToken) on Devnet.
+2. On proposal voting, transfer 1 TestToken from voter to proposal/founder wallet.
+3. Record on-chain transaction signature in votes table.
+4. Show on-chain vote status in UI (with Solana explorer link).
+
+Step 5: Token Faucet (Edge Function)
+------------------------------------
+1. Create faucet-tokens.ts Edge Function to airdrop TestTokens to new users.
+2. Allow users to claim tokens from the faucet in the UI.
+
+Step 6: Grant Awarding (On-Chain)
+---------------------------------
+1. On round end, transfer full token pool to winning founder's wallet.
+2. Update NFT badge for winner (Edge Function: award-winner.ts).
+3. Show awarded status in profile and on-chain link.
+
+Step 7: UI/UX & Status Display
+-----------------------------
+1. Show wallet connect status, NFT badge, and on-chain links in profile.
+2. Show on-chain vote/award status in proposal and grant views.
+3. Add error/success toasts for all on-chain actions.
+
+Step 8: Testing & Security
+--------------------------
+1. Test all flows on Solana Devnet (wallet connect, mint, vote, award).
+2. Secure all private keys and sensitive data (never expose in frontend).
+3. Update progress.md after each major step. 

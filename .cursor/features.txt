@@ -1,0 +1,88 @@
+# GrantMatch Features
+
+## 1. AI-Powered Grant Discovery
+- Intelligent chat interface for finding relevant grants
+- AI-driven matching based on project descriptions
+- Personalized grant recommendations
+- Real-time filtering and search capabilities
+
+## 2. Grant Exploration & Management
+- Browse and search through available grants
+- Filter by tags, organization, and criteria
+- Detailed grant information view
+- Application tracking system
+- Grant status monitoring
+
+## 3. DAO Voting System
+- Community-based proposal voting
+- On-chain voting using test tokens
+- Winner-takes-all funding model
+- Transparent voting process
+- Active and passed proposals tracking
+
+## 4. Proposal Creation & Management
+- Founders can create proposals in DAO section
+- Proposals include title, description, and grant links
+- Active proposals display with voting status
+- End date tracking for proposals
+- Proposal history and results
+
+## 5. Female Founders Support
+- Special flag for female-led organizations
+- Self-attestation during signup
+- Special badge in NFT profile metadata
+- Platform-wide highlighting for diversity
+- Gender verification system
+
+## 6. On-chain Voting & Funding
+- Phantom Wallet integration
+- Solana Devnet operations
+- TestToken voting system (1 token per vote)
+- Winner-takes-all funding distribution
+- Real-time vote counting
+
+## 7. Blockchain Record Tracking
+### For Founders:
+- Grant application count tracking
+- Total votes received
+- Total funding received
+- NFT achievements and badges
+- Project success metrics
+
+### For Funders:
+- Vote count tracking
+- Fund contribution records
+- Voting history
+- Participation metrics
+- Contribution impact tracking
+
+## 8. NFT Profile System
+- Automatic NFT minting on signup
+- Comprehensive metadata storage:
+  - Mission statement
+  - Regional information
+  - Gender verification
+  - Grant application history
+  - Champion badges
+- On-chain storage with Supabase backup
+
+## 9. User Authentication & Profiles
+- Email/password authentication
+- Role-based access (founder/DAO funder)
+- Profile management system
+- Wallet integration
+- Achievement tracking
+
+## 10. Technical Infrastructure
+- Supabase for data storage
+- Solana Devnet for blockchain operations
+- Real-time updates
+- Secure data management
+- Transparent record keeping
+
+## 11. Security & Privacy
+- Row-level security in database
+- Secure wallet connections
+- Protected user data
+- Transparent voting records
+- Immutable blockchain records

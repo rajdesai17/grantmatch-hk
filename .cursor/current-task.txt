@@ -1,0 +1,43 @@
+GrantMatch Feature Expansion Plan
+================================
+Impliment all the features step by step from @fea
+Goal: Enable detailed grant views, allow founders to apply for grants (saving to their profile), implement proposal creation for founders, and list proposals with voting details in the DAO section.
+call supabase mcp and verify what exists.
+Step 1: Grant Details & Application
+-----------------------------------
+1. Add a Grant Details modal/page:
+   - When "View Details" is clicked on a grant card, show full grant info (description, requirements, etc.).
+   - If user is a founder, show an "Apply for Grant" button.
+2. Implement grant application logic:
+   - On apply, save the grant ID to the founder's profile (appliedGrants).
+   - Prevent duplicate applications.
+   - Show confirmation/toast on success.
+
+Step 2: Profile Integration
+---------------------------
+1. Update Profile page:
+   - List all grants the founder has applied for (with status if available).
+   - Increment applied_grants_count.
+
+Step 3: Proposal Creation (DAO)
+-------------------------------
+1. Add "Create Proposal" button/modal in DAO Voting page:
+   - Only visible to founders.
+   - Form: title, description, (optional) grant link.
+   - On submit, add proposal to proposals data (Supabase or static for now).
+2. Show new proposals in the DAO Voting list (active proposals).
+
+Step 4: Voting Details
+----------------------
+1. In DAO Voting, for each proposal:
+   - Show number of votes (for/against/abstain).
+   - Allow users to vote (if not already voted).
+   - Update vote counts in real time (Supabase or local state for now).
+2. In Profile, show proposals created by the founder and their vote stats.
+
+Step 5: Data Model & Backend
+----------------------------
+1. Update Supabase tables if needed:
+   - Ensure profiles, proposals, and votes tables support new fields.
+   - Add API/Edge Function endpoints if required for proposals and voting.
+Update progress.md after each major step. 

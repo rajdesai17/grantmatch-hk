@@ -3,6 +3,7 @@ import { Menu, X, LogOut } from 'lucide-react';
 import { useNavigate, useLocation } from '../utils/router';
 import { AuthModal } from '../auth/AuthModal';
 import { supabase } from '../../lib/supabase';
+import { useWallet } from '../../lib/useWallet';
 
 const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -11,6 +12,7 @@ const Header: React.FC = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
+  const { publicKey, connected, connect, disconnect } = useWallet();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -84,6 +86,15 @@ const Header: React.FC = () => {
           <div className="hidden md:block">
             {user ? (
               <div className="flex items-center gap-4">
+                {/* Wallet Connect Button */}
+                {connected ? (
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-green-400 font-mono">{publicKey?.toBase58().slice(0, 6)}...{publicKey?.toBase58().slice(-4)}</span>
+                    <button onClick={disconnect} className="btn-secondary">Disconnect Wallet</button>
+                  </div>
+                ) : (
+                  <button onClick={connect} className="btn-secondary">Connect Wallet</button>
+                )}
                 <button 
                   onClick={handleSignOut}
                   className="btn-secondary"
@@ -135,13 +146,24 @@ const Header: React.FC = () => {
               </button>
             ))}
             {user ? (
-              <button 
-                onClick={handleSignOut}
-                className="btn-secondary w-full"
-              >
-                <LogOut size={18} />
-                Sign Out
-              </button>
+              <>
+                {/* Wallet Connect Button (Mobile) */}
+                {connected ? (
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xs text-green-400 font-mono">{publicKey?.toBase58().slice(0, 6)}...{publicKey?.toBase58().slice(-4)}</span>
+                    <button onClick={disconnect} className="btn-secondary w-full">Disconnect Wallet</button>
+                  </div>
+                ) : (
+                  <button onClick={connect} className="btn-secondary w-full mb-2">Connect Wallet</button>
+                )}
+                <button 
+                  onClick={handleSignOut}
+                  className="btn-secondary w-full"
+                >
+                  <LogOut size={18} />
+                  Sign Out
+                </button>
+              </>
             ) : (
               <button 
                 onClick={() => {
