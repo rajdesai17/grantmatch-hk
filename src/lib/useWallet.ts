@@ -15,6 +15,14 @@ export function useWallet() {
   useEffect(() => {
     if (window.solana && window.solana.isPhantom) {
       setPhantomAvailable(true);
+      window.solana.connect({ onlyIfTrusted: true })
+        .then((res: any) => {
+          if (res.publicKey) {
+            setPublicKey(new PublicKey(res.publicKey.toString()));
+            setConnected(true);
+          }
+        })
+        .catch(() => {});
       window.solana.on('connect', () => {
         setPublicKey(new PublicKey(window.solana.publicKey.toString()));
         setConnected(true);
