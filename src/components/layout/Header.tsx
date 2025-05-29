@@ -42,6 +42,12 @@ const Header: React.FC = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    // Disconnect wallet whenever user changes (sign in/out)
+    disconnect();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
   const handleSignOut = async () => {
     await disconnect(); // Disconnect wallet on sign out
     await supabase.auth.signOut();

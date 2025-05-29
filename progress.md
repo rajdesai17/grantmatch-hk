@@ -27,6 +27,7 @@
   - Added warning banner in App.tsx if Phantom is not detected.
 - Modified signout logic in Header.tsx to disconnect the wallet on user signout, ensuring wallet is only linked to the current user session.
 - Removed wallet auto-connect on page load. Wallet now only connects when user explicitly clicks Connect Wallet, preventing wallet from being connected before user signs in.
+- Added logic to force disconnect wallet whenever user changes (sign in/out), ensuring wallet is always disconnected until user explicitly connects it after sign in.
 
 ## Documentation & Rules
 - Detailed build guide in follow.txt
