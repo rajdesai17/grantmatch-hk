@@ -34,7 +34,7 @@ const GrantCard: React.FC<{ grant: GrantProps; onViewDetails?: (grant: GrantProp
     <div className="card-bg rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-background-light flex flex-col h-full">
       <div className="p-6 flex flex-col flex-grow">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="text-xl font-bold text-text-primary line-clamp-1">{grant.title}</h3>
+          <h3 className="text-xl font-bold text-text-primary">{grant.title}</h3>
           {grant.female_flag && (
             <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-pink-200 text-pink-800 text-xs font-semibold ml-2 gap-1">
               <Award size={14} className="text-pink-700" />
