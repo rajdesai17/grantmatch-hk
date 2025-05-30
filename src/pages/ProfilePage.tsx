@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Award, Mail, Briefcase, ArrowUpRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useNavigate } from '../components/utils/router';
-import { useWallet } from '../lib/useWallet';
 
 interface Profile {
   name: string;
@@ -35,9 +34,6 @@ const ProfilePage: React.FC = () => {
   const [minting, setMinting] = useState(false);
   const [mintError, setMintError] = useState<string | null>(null);
   const [mintSuccess, setMintSuccess] = useState<{ mint: string; signature: string } | null>(null);
-  const { publicKey, connect, phantomAvailable } = useWallet();
-  const [walletLoading, setWalletLoading] = useState(false);
-  const [walletError, setWalletError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -118,11 +114,6 @@ const ProfilePage: React.FC = () => {
     setMintError(null);
     setMintSuccess(null);
     try {
-      if (!profile?.wallet_address) {
-        setMintError('Connect your wallet first.');
-        setMinting(false);
-        return;
-      }
       // 1. Enforce one NFT per user (in-memory only)
       if (nfts.length > 0) {
         setMintError('You already have an NFT profile.');
@@ -131,17 +122,17 @@ const ProfilePage: React.FC = () => {
       }
       // 2. Use static metadata for mock NFT
       const metadata = {
-        name: 'GrantMatch Demo NFT',
-        symbol: 'GMNFT',
-        description: 'This is a mock NFT for testing.',
+        name: 'GrantMatch Founder NFT',
+        symbol: 'GMFND',
+        description: 'This NFT represents your verified founder profile on GrantMatch.',
         image: '',
         attributes: [
-          { trait_type: 'Demo', value: true }
+          { trait_type: 'Founder', value: true }
         ]
       };
       // 3. Simulate NFT minting (no Supabase, no storage)
-      const mockMint = 'MockMint111111111111111111111111111111111111';
-      const mockSignature = 'MockSignature1111111111111111111111111111111';
+      const mockMint = 'GmFnd111111111111111111111111111111111111111';
+      const mockSignature = '5K2n1v8Qw3e4r5t6y7u8i9o0p1a2s3d4f5g6h7j8k9l0z1x2c3v4b5n6m7q8w9e0r1t2y3u4i5o6p7';
       const mockNft = {
         id: mockMint,
         champion_badge: false,
@@ -158,36 +149,6 @@ const ProfilePage: React.FC = () => {
       }
     } finally {
       setMinting(false);
-    }
-  };
-
-  const handleConnectWallet = async () => {
-    setWalletError(null);
-    setWalletLoading(true);
-    try {
-      if (!phantomAvailable) {
-        window.open('https://phantom.app/', '_blank');
-        setWalletLoading(false);
-        return;
-      }
-      await connect();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not found');
-      const walletAddress = publicKey?.toBase58();
-      if (!walletAddress) throw new Error('Wallet not found');
-      // Directly update wallet_address in profiles table
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ wallet_address: walletAddress })
-        .eq('user_id', user.id);
-      if (updateError) throw new Error(updateError.message || 'Failed to update wallet address in profile');
-      setWalletError(null);
-      // Refetch profile to update UI
-      setProfile((prev) => prev ? { ...prev, wallet_address: walletAddress } : prev);
-    } catch (err) {
-      setWalletError(err instanceof Error ? err.message : 'Failed to connect wallet');
-    } finally {
-      setWalletLoading(false);
     }
   };
 
@@ -258,18 +219,11 @@ const ProfilePage: React.FC = () => {
                   <Mail size={20} />
                   Contact
                 </button>
-                {profile.wallet_address ? (
+                {profile.wallet_address && (
                   <button className="btn-secondary text-base px-6 py-2.5">
                     <Briefcase size={20} />
                     View Wallet
                   </button>
-                ) : (
-                  <>
-                    <button className="btn-secondary text-base px-6 py-2.5" onClick={handleConnectWallet} disabled={walletLoading}>
-                      {walletLoading ? 'Connecting...' : 'Connect Wallet'}
-                    </button>
-                    {walletError && <div className="text-red-500 mt-2">{walletError}</div>}
-                  </>
                 )}
               </div>
             </div>
@@ -398,11 +352,9 @@ const ProfilePage: React.FC = () => {
             ) :
               <div className="card-bg rounded-xl p-6 text-center">
                 <p className="text-text-secondary mb-4">No NFT achievements yet.</p>
-                {profile.wallet_address && (
-                  <button className="btn-secondary mx-auto" onClick={handleMintNft} disabled={minting}>
-                    {minting ? 'Minting NFT...' : 'Mint NFT Achievement'}
-                  </button>
-                )}
+                <button className="btn-secondary mx-auto" onClick={handleMintNft} disabled={minting}>
+                  {minting ? 'Minting NFT...' : 'Mint NFT Achievement'}
+                </button>
                 {mintError && <div className="text-red-500 mt-2">{mintError}</div>}
                 {mintSuccess && (
                   <div className="text-green-500 mt-2">

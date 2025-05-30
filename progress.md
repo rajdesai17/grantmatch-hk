@@ -28,6 +28,8 @@
 - Modified signout logic in Header.tsx to disconnect the wallet on user signout, ensuring wallet is only linked to the current user session.
 - Improved wallet connect flow: now links wallet to user profile only after Phantom is actually connected, using callback mechanism. Prevents 'wallet or user not found' error.
 - Enhanced ai-grants Edge Function: Discovery chat now returns detailed, personalized reasons for each matching grant, explaining why the user should apply based on their project description and matched keywords.
+- Updated Profile page: Mint NFT option is now always shown, even if wallet is not connected. Clicking it prompts wallet connect if needed.
+- Mint NFT button now always mints a mock NFT, regardless of wallet connection or environment, as long as the user does not already have one.
 
 ## Documentation & Rules
 - Detailed build guide in follow.txt
