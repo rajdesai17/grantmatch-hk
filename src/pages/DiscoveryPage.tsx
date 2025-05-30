@@ -122,6 +122,22 @@ const DiscoveryPage: React.FC = () => {
                     </div>
                   </div>
                 ))}
+                {loading && (
+                  <div className="flex justify-start">
+                    <div className="flex max-w-[80%] items-start gap-3">
+                      <div className="w-9 h-9 rounded-full flex items-center justify-center shadow bg-accent-subtle text-accent-teal">
+                        <Bot size={18} />
+                      </div>
+                      <div className="p-4 rounded-2xl text-base leading-relaxed shadow-subtle bg-background border border-background-light text-text-primary">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-accent-teal rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                          <div className="w-2 h-2 bg-accent-teal rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                          <div className="w-2 h-2 bg-accent-teal rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div ref={messagesEndRef} />
               </div>
             </div>

@@ -88,6 +88,25 @@ serve(async (req) => {
     // 3. Filter grants by keywords (title, description, tags)
     const matches = (grants as Grant[]).filter((grant: Grant) => {
       const text = `${grant.title} ${grant.description} ${(grant.tags || []).join(' ')}`.toLowerCase();
+      const queryLower = query.toLowerCase();
+      
+      // Special handling for women empowerment queries
+      if (queryLower.includes('women') || queryLower.includes('female') || queryLower.includes('gender')) {
+        return text.includes('women') || text.includes('female') || text.includes('gender') || 
+               text.includes('empowerment') || text.includes('equality');
+      }
+      
+      // Special handling for Web3/blockchain queries
+      if (queryLower.includes('web3') || queryLower.includes('blockchain') || 
+          queryLower.includes('dao') || queryLower.includes('decentralized') ||
+          queryLower.includes('nft') || queryLower.includes('token')) {
+        return text.includes('web3') || text.includes('blockchain') || 
+               text.includes('dao') || text.includes('decentralized') ||
+               text.includes('nft') || text.includes('token') ||
+               text.includes('defi') || text.includes('crypto');
+      }
+      
+      // Regular keyword matching for other queries
       return keywords.some((kw: string) => text.includes(kw));
     });
 
@@ -111,12 +130,39 @@ serve(async (req) => {
     }
 
     // 4. For each top match, ask Gemini for a specific reason
-    const topMatches = matches.slice(0, 2); // Limit to 3 for performance
+    const topMatches = matches.slice(0, 2); // Limit to 2 for performance
     const detailedMatches: { title: string; organization: string; reason: string; id: string; url: string | null }[] = [];
-    for (const g of topMatches) {
+    
+    // Sort matches by relevance score
+    const sortedMatches = topMatches.sort((a, b) => {
+      const aText = `${a.title} ${a.description} ${(a.tags || []).join(' ')}`.toLowerCase();
+      const bText = `${b.title} ${b.description} ${(b.tags || []).join(' ')}`.toLowerCase();
+      const queryLower = query.toLowerCase();
+      
+      // Calculate relevance scores
+      const aScore = [
+        aText.includes('web3') && queryLower.includes('web3'),
+        aText.includes('blockchain') && queryLower.includes('blockchain'),
+        aText.includes('dao') && queryLower.includes('dao'),
+        aText.includes('women') && queryLower.includes('women'),
+        aText.includes('decentralized') && queryLower.includes('decentralized')
+      ].filter(Boolean).length;
+      
+      const bScore = [
+        bText.includes('web3') && queryLower.includes('web3'),
+        bText.includes('blockchain') && queryLower.includes('blockchain'),
+        bText.includes('dao') && queryLower.includes('dao'),
+        bText.includes('women') && queryLower.includes('women'),
+        bText.includes('decentralized') && queryLower.includes('decentralized')
+      ].filter(Boolean).length;
+      
+      return bScore - aScore; // Higher score first
+    });
+
+    for (const g of sortedMatches) {
       let reason = '';
       try {
-        const prompt = `User's project: ${query}\nGrant: ${g.title} (${g.organization})\nDescription: ${g.description}\nTags: ${(g.tags || []).join(', ')}\nIn 1-2 sentences, explain why this grant is a good fit for the user's project. Be specific and reference both the project and the grant.`;
+        const prompt = `Given this user's project focus: "${query}" and this grant: "${g.title}" by ${g.organization} (${g.description}), provide a specific 1-2 sentence explanation of why this grant is a good match. If the grant is not a good match, explain why briefly. Focus on concrete connections between the project's main theme and the grant's purpose.`;
         const reasonBody = {
           contents: [{ parts: [{ text: prompt }]}]
         };
@@ -127,6 +173,11 @@ serve(async (req) => {
         });
         const reasonData = await reasonRes.json();
         reason = reasonData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        
+        // Validate the response
+        if (reason.includes('[insert') || reason.includes('template') || reason.length < 10) {
+          throw new Error('Invalid response format');
+        }
       } catch {
         // fallback to previous logic
         reason = buildReason(g, query, keywords);
@@ -145,10 +196,19 @@ serve(async (req) => {
       const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
       return sentences.slice(0, 2).join(' ').trim();
     }
+    
+    // Validate matches before returning
+    if (detailedMatches.length === 0 || detailedMatches.some(m => !m.reason || m.reason.includes('[insert'))) {
+      return new Response(JSON.stringify({
+        message: 'No relevant grants found. Please provide more details about your project.',
+        grants: []
+      }), {
+        headers: corsHeaders(),
+      });
+    }
+
     return new Response(JSON.stringify({
-      message: detailedMatches.length > 0
-        ? `Top matching grants:<br><br>${detailedMatches.map((g) => `• ${g.title} (${g.organization}):<br>  ${firstTwoSentences(g.reason)}`).join('<br><br>')}`
-        : 'No relevant grants found.',
+      message: `Top matching grants:<br><br>${detailedMatches.map((g) => `• ${g.title} (${g.organization}):<br>  ${firstTwoSentences(g.reason)}`).join('<br><br>')}`,
       grants: detailedMatches
     }), {
       headers: corsHeaders(),

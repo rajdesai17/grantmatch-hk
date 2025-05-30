@@ -58,5 +58,38 @@
     "description": "Supporting solutions that bring reliable internet to underserved rural communities.",
     "tags": ["rural", "connectivity", "infrastructure"],
     "requirements": ["Pilot implementation plan", "Community partnerships", "Sustainability model"]
+  },
+  {
+    "id": 7,
+    "title": "Women in Tech Leadership Grant",
+    "organization": "Tech Empowerment Foundation",
+    "amount": 100000,
+    "deadline": "2025-06-30",
+    "description": "Supporting women-led technology initiatives that promote gender equality and create opportunities for women in tech. This grant focuses on projects that provide training, mentorship, and career development for women in technology fields.",
+    "tags": ["women", "technology", "leadership", "empowerment", "education"],
+    "requirements": [
+      "Women-led project or organization",
+      "Clear impact metrics for women's advancement",
+      "Sustainable program model",
+      "Partnership with tech industry leaders",
+      "Track record of community engagement"
+    ]
+  },
+  {
+    "id": 8,
+    "title": "Web3 Social Impact Innovation Grant",
+    "organization": "Blockchain for Good Foundation",
+    "amount": 150000,
+    "deadline": "2025-07-31",
+    "description": "Supporting innovative Web3 projects that combine AI, blockchain, and social impact to empower underrepresented communities. This grant focuses on platforms that use emerging technologies to create more equitable access to resources and opportunities.",
+    "tags": ["web3", "ai", "blockchain", "social-impact", "innovation", "decentralization"],
+    "requirements": [
+      "Working prototype with AI integration",
+      "Blockchain implementation (Solana preferred)",
+      "Clear social impact metrics",
+      "Focus on underrepresented communities",
+      "Open source components",
+      "DAO governance model"
+    ]
   }
 ]

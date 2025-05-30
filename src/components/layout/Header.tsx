@@ -129,7 +129,11 @@ const Header: React.FC = () => {
               <button
                 key={item.path}
                 onClick={() => navigate(item.path)}
-                className={`nav-link ${isActive(item.path) ? 'active' : ''}`}
+                className={`nav-link transition-all duration-200 hover:text-white ${
+                  isActive(item.path) 
+                    ? 'text-white relative after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-accent-teal' 
+                    : 'text-gray-300'
+                }`}
               >
                 {item.label}
               </button>
@@ -142,8 +146,8 @@ const Header: React.FC = () => {
                 {/* Wallet Connect Button */}
                 {connected ? (
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-green-400 font-mono">{publicKey?.toBase58().slice(0, 6)}...{publicKey?.toBase58().slice(-4)}</span>
-                    <button onClick={disconnect} className="btn-secondary">Disconnect Wallet</button>
+                    <span className="text-xs text-green-400 font-mono bg-green-900/20 px-2 py-1 rounded transition-colors duration-200">{publicKey?.toBase58().slice(0, 6)}...{publicKey?.toBase58().slice(-4)}</span>
+                    <button onClick={disconnect} className="btn-secondary transition-colors duration-200 hover:bg-red-500/20">Disconnect Wallet</button>
                   </div>
                 ) : (
                   <button
@@ -158,7 +162,7 @@ const Header: React.FC = () => {
                         setConnectingWallet(false);
                       }
                     }}
-                    className="btn-secondary"
+                    className="btn-secondary transition-colors duration-200 hover:bg-accent-teal/20"
                     disabled={connectingWallet}
                   >
                     {connectingWallet ? 'Connecting...' : 'Connect Wallet'}
@@ -166,19 +170,19 @@ const Header: React.FC = () => {
                 )}
                 <button 
                   onClick={handleSignOut}
-                  className="btn-secondary"
+                  className="btn-secondary transition-colors duration-200 hover:bg-red-500/20"
                 >
                   <LogOut size={18} />
                   Sign Out
                 </button>
                 {walletError && (
-                  <div className="text-red-500 text-xs mt-1">{walletError}</div>
+                  <div className="text-red-500 text-xs mt-1 bg-red-500/10 px-2 py-1 rounded transition-colors duration-200">{walletError}</div>
                 )}
               </div>
             ) : (
               <button 
                 onClick={() => setAuthModalOpen(true)}
-                className="btn-secondary"
+                className="btn-secondary transition-colors duration-200 hover:bg-accent-teal/20"
               >
                 Sign In
               </button>
@@ -189,7 +193,7 @@ const Header: React.FC = () => {
           <div className="md:hidden">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="text-gray-300 hover:text-white"
+              className="text-gray-300 hover:text-white transition-colors duration-200 p-2 rounded-md hover:bg-background-light"
             >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -208,9 +212,9 @@ const Header: React.FC = () => {
                   navigate(item.path);
                   setMobileMenuOpen(false);
                 }}
-                className={`block w-full text-left py-2 px-3 rounded-md ${
+                className={`block w-full text-left py-2 px-3 rounded-md transition-all duration-200 ${
                   isActive(item.path)
-                    ? 'bg-accent-subtle text-white'
+                    ? 'bg-accent-subtle text-white shadow-md'
                     : 'text-gray-300 hover:bg-background-light hover:text-white'
                 }`}
               >
@@ -222,8 +226,8 @@ const Header: React.FC = () => {
                 {/* Wallet Connect Button (Mobile) */}
                 {connected ? (
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs text-green-400 font-mono">{publicKey?.toBase58().slice(0, 6)}...{publicKey?.toBase58().slice(-4)}</span>
-                    <button onClick={disconnect} className="btn-secondary w-full">Disconnect Wallet</button>
+                    <span className="text-xs text-green-400 font-mono bg-green-900/20 px-2 py-1 rounded transition-colors duration-200">{publicKey?.toBase58().slice(0, 6)}...{publicKey?.toBase58().slice(-4)}</span>
+                    <button onClick={disconnect} className="btn-secondary w-full transition-colors duration-200 hover:bg-red-500/20">Disconnect Wallet</button>
                   </div>
                 ) : (
                   <button
@@ -238,7 +242,7 @@ const Header: React.FC = () => {
                         setConnectingWallet(false);
                       }
                     }}
-                    className="btn-secondary w-full mb-2"
+                    className="btn-secondary w-full mb-2 transition-colors duration-200 hover:bg-accent-teal/20"
                     disabled={connectingWallet}
                   >
                     {connectingWallet ? 'Connecting...' : 'Connect Wallet'}
@@ -246,13 +250,13 @@ const Header: React.FC = () => {
                 )}
                 <button 
                   onClick={handleSignOut}
-                  className="btn-secondary w-full"
+                  className="btn-secondary w-full transition-colors duration-200 hover:bg-red-500/20"
                 >
                   <LogOut size={18} />
                   Sign Out
                 </button>
                 {walletError && (
-                  <div className="text-red-500 text-xs mt-1">{walletError}</div>
+                  <div className="text-red-500 text-xs mt-1 bg-red-500/10 px-2 py-1 rounded transition-colors duration-200">{walletError}</div>
                 )}
               </>
             ) : (
@@ -261,7 +265,7 @@ const Header: React.FC = () => {
                   setAuthModalOpen(true);
                   setMobileMenuOpen(false);
                 }}
-                className="btn-secondary w-full"
+                className="btn-secondary w-full transition-colors duration-200 hover:bg-accent-teal/20"
               >
                 Sign In
               </button>
