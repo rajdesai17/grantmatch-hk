@@ -30,6 +30,8 @@
 - Enhanced ai-grants Edge Function: Discovery chat now returns detailed, personalized reasons for each matching grant, explaining why the user should apply based on their project description and matched keywords.
 - Updated Profile page: Mint NFT option is now always shown, even if wallet is not connected. Clicking it prompts wallet connect if needed.
 - Mint NFT button now always mints a mock NFT, regardless of wallet connection or environment, as long as the user does not already have one.
+- Updated ProfilePage to use the contact_email column for the editable contact email field (read and save). Sign-in email remains read-only. State and logic updated accordingly.
+- Added 'View Contact' button to each proposal card in the DAO voting section. Clicking it opens a modal showing the proposal creator's profile contact email (contact_email) and name, fetched from the profiles table.
 
 ## Documentation & Rules
 - Detailed build guide in follow.txt

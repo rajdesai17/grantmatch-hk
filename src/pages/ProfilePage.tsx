@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Award, Mail, Briefcase, ArrowUpRight } from 'lucide-react';
+import { Award, Mail, Briefcase, ArrowUpRight, X } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useNavigate } from '../components/utils/router';
 
 interface Profile {
   name: string;
   role: 'founder' | 'dao_funder';
-  email: string;
+  email: string; // sign-in email (read-only)
+  contact_email?: string; // editable contact email
   region?: string;
   mission?: string;
   female_flag?: boolean;
@@ -34,6 +35,10 @@ const ProfilePage: React.FC = () => {
   const [minting, setMinting] = useState(false);
   const [mintError, setMintError] = useState<string | null>(null);
   const [mintSuccess, setMintSuccess] = useState<{ mint: string; signature: string } | null>(null);
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
+  const [emailInput, setEmailInput] = useState('');
+  const [emailUpdateMsg, setEmailUpdateMsg] = useState<string | null>(null);
+  const [signInEmail, setSignInEmail] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -103,6 +108,12 @@ const ProfilePage: React.FC = () => {
 
     fetchProfile();
   }, [navigate]);
+
+  useEffect(() => {
+    if (emailModalOpen && profile) {
+      setEmailInput(profile.contact_email || '');
+    }
+  }, [emailModalOpen, profile]);
 
   const handleViewDetails = (proposal: typeof myProposals[0]) => {
     setSelectedProposal(proposal);
@@ -215,7 +226,13 @@ const ProfilePage: React.FC = () => {
                 </div>
               )}
               <div className="flex gap-4 justify-center md:justify-start mt-4">
-                <button className="btn-primary text-base px-6 py-2.5">
+                <button className="btn-primary text-base px-6 py-2.5" onClick={async () => { 
+                  setEmailInput(profile.contact_email || ''); 
+                  setEmailModalOpen(true); 
+                  setEmailUpdateMsg(null); 
+                  const { data: { user } } = await supabase.auth.getUser();
+                  setSignInEmail(user?.email || null);
+                }}>
                   <Mail size={20} />
                   Contact
                 </button>
@@ -352,9 +369,9 @@ const ProfilePage: React.FC = () => {
             ) :
               <div className="card-bg rounded-xl p-6 text-center">
                 <p className="text-text-secondary mb-4">No NFT achievements yet.</p>
-                <button className="btn-secondary mx-auto" onClick={handleMintNft} disabled={minting}>
-                  {minting ? 'Minting NFT...' : 'Mint NFT Achievement'}
-                </button>
+                  <button className="btn-secondary mx-auto" onClick={handleMintNft} disabled={minting}>
+                    {minting ? 'Minting NFT...' : 'Mint NFT Achievement'}
+                  </button>
                 {mintError && <div className="text-red-500 mt-2">{mintError}</div>}
                 {mintSuccess && (
                   <div className="text-green-500 mt-2">
@@ -366,6 +383,51 @@ const ProfilePage: React.FC = () => {
           </div>
         </div>
       </div>
+      {emailModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+          <div className="bg-background-dark rounded-2xl shadow-lg max-w-md w-full p-8 relative">
+            <button className="absolute top-4 right-4 text-text-secondary hover:text-white" onClick={() => setEmailModalOpen(false)}>
+              <X size={20} />
+            </button>
+            <h2 className="text-2xl font-bold mb-4 text-accent-teal">Edit Contact Email</h2>
+            {signInEmail && (
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-text-secondary mb-1">Sign-in Email</label>
+                <input type="email" value={signInEmail} readOnly className="w-full bg-background-dark border border-gray-800 rounded-md px-4 py-2 text-white opacity-60 mb-2" />
+              </div>
+            )}
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              setEmailUpdateMsg(null);
+              try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) throw new Error('User not found');
+                const { error } = await supabase
+                  .from('profiles')
+                  .update({ contact_email: emailInput })
+                  .eq('user_id', user.id);
+                if (error) throw error;
+                setProfile((prev) => prev ? { ...prev, contact_email: emailInput } : prev);
+                setEmailUpdateMsg('Contact email updated successfully!');
+              } catch (err) {
+                console.error(err);
+                setEmailUpdateMsg('Failed to update contact email.');
+              }
+            }}>
+              <label className="block text-sm font-medium text-text-secondary mb-1">Profile Contact Email</label>
+              <input
+                type="email"
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
+                className="w-full bg-background-dark border border-gray-800 rounded-md px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-accent-teal mb-4"
+                required
+              />
+              <button type="submit" className="btn-primary w-full">Save</button>
+              {emailUpdateMsg && <div className="mt-3 text-center text-sm text-accent-teal">{emailUpdateMsg}</div>}
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

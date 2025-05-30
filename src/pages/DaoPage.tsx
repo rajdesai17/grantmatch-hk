@@ -29,7 +29,8 @@ const ProposalCard: React.FC<{ proposal: ProposalProps; currentUserId?: string }
   const [userVote, setUserVote] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [voting, setVoting] = useState(false);
-  const [proposerProfile, setProposerProfile] = useState<{ female_flag?: boolean } | null>(null);
+  const [proposerProfile, setProposerProfile] = useState<{ female_flag?: boolean; name?: string; contact_email?: string } | null>(null);
+  const [contactModalOpen, setContactModalOpen] = useState(false);
   const proposalId = proposal.id;
 
   useEffect(() => {
@@ -55,12 +56,12 @@ const ProposalCard: React.FC<{ proposal: ProposalProps; currentUserId?: string }
   }, [proposalId, currentUserId]);
 
   useEffect(() => {
-    // Fetch proposer profile to check for female_flag
+    // Fetch proposer profile to check for female_flag and contact_email
     const fetchProposerProfile = async () => {
       if (!proposal.proposer_id) return;
       const { data } = await supabase
         .from('profiles')
-        .select('female_flag')
+        .select('female_flag, name, contact_email')
         .eq('user_id', proposal.proposer_id)
         .single();
       setProposerProfile(data);
@@ -125,6 +126,15 @@ const ProposalCard: React.FC<{ proposal: ProposalProps; currentUserId?: string }
               </span>
             )}
           </span>
+          {proposal.proposer_id && (
+            <button
+              className="ml-3 text-accent-teal underline hover:no-underline"
+              onClick={() => setContactModalOpen(true)}
+              type="button"
+            >
+              View Contact
+            </button>
+          )}
         </div>
         
         <div className="mb-6">
@@ -180,6 +190,24 @@ const ProposalCard: React.FC<{ proposal: ProposalProps; currentUserId?: string }
           <button className="flex-1 py-2 bg-gray-700 bg-opacity-20 hover:bg-opacity-30 rounded-md text-gray-400 transition-colors" onClick={() => handleVote('abstain')}>
             Abstain
           </button>
+        </div>
+      )}
+      {contactModalOpen && proposerProfile && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+          <div className="bg-background-dark rounded-2xl shadow-lg max-w-md w-full p-8 relative">
+            <button className="absolute top-4 right-4 text-text-secondary hover:text-white" onClick={() => setContactModalOpen(false)}>
+              <X size={20} />
+            </button>
+            <h2 className="text-2xl font-bold mb-4 text-accent-teal">Contact Proposal Creator</h2>
+            <div className="mb-2">
+              <span className="block text-sm font-medium text-text-secondary mb-1">Name</span>
+              <span className="block text-lg font-semibold text-white">{proposerProfile.name || 'Unknown'}</span>
+            </div>
+            <div className="mb-2">
+              <span className="block text-sm font-medium text-text-secondary mb-1">Profile Contact Email</span>
+              <span className="block text-lg font-semibold text-accent-teal">{proposerProfile.contact_email || 'Not provided'}</span>
+            </div>
+          </div>
         </div>
       )}
     </div>
